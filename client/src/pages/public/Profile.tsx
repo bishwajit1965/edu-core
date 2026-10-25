@@ -7,10 +7,14 @@ const Profile = () => {
   };
   return (
     <div>
-      <h1 className="text-2xl font-bold">User Profile</h1>
-      <p>Welcome {user?.name}</p>
-      <p>{user?.email}</p>
-      <p>{user?.role}</p>
+      <div className="aura aura-rainbow">
+        <div className="card bg-base-200 p-8 shadow-sm">
+          <h1 className="text-2xl font-bold">User Profile</h1>
+          <p>Welcome {user?.name}</p>
+          <p>{user?.email}</p>
+          <p>{user?.role}</p>
+        </div>
+      </div>
     </div>
   );
 };
