@@ -1,0 +1,25 @@
+# logs
+logs
+*.log
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# dependencies
+node_modules
+
+# build
+dist
+build
+
+# coverage
+coverage
+
+# vscode
+.vscode
+
+# mac
+.DS_Store
+
