@@ -1,24 +1,16 @@
 import { useAuth } from "../../hooks/useAuth";
 
 const AdminDashboard = () => {
-  type AuthUser = {
-    role?: string;
-  };
-
-  const auth = useAuth() as {
-    user?: AuthUser;
-    authReady?: boolean;
-    loading?: boolean;
-  };
-  const { user } = auth;
+  const { user } = useAuth() as { user?: { role?: string } };
 
   return (
-    <div className="">
-      <h1 className="lg:text-4xl text-xl font-bold mb-4">Admin Dashboard</h1>
-      <p>Hello, {user?.role || "User"}!</p>
+    <div>
+      <h1 className="mb-4 text-2xl font-bold lg:text-4xl">Admin Dashboard</h1>
 
-      <p>
-        {`Welcome ${user?.role || "User"}! Please wait while we load your dashboard.`}
+      <p className="text-gray-700">Welcome, {user?.role || "User"}!</p>
+
+      <p className="mt-2 text-sm text-gray-500">
+        Manage your institution from one place.
       </p>
     </div>
   );

@@ -18,6 +18,7 @@ import SettingsPage from "../pages/admin/SettingsPage";
 import UsersPage from "../pages/admin/UsersPage";
 import VerifyOtp from "../pages/auth/VerifyOtp";
 import Profile from "../pages/public/Profile";
+import StudentsPage from "../pages/admin/StudentsPage";
 
 export const router = createBrowserRouter([
   // Main layout
@@ -105,6 +106,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/dashboard/settings",
         element: <SettingsPage />,
+      },
+      {
+        path: "/admin/dashboard/students",
+        element: <StudentsPage />,
       },
     ],
   },

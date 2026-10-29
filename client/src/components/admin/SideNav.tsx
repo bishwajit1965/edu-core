@@ -1,4 +1,4 @@
-import { LucideSettings, LucideUser } from "lucide-react";
+import { LucideSettings, LucideUser, LucideUserCog } from "lucide-react";
 import { NavLink } from "react-router-dom";
 interface SideNavProps {
   onNavigate?: () => void;
@@ -25,34 +25,42 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       path: "/admin/dashboard/settings",
       icon: <LucideSettings size={size} />,
     },
+    {
+      id: 4,
+      name: "Students",
+      path: "/admin/dashboard/students",
+      icon: <LucideUserCog size={size} />,
+    },
   ];
 
   return (
-    <div>
+    <>
       <div className="mb-2">
         <h2 className="lg:text-xl font-bold ">Navigation</h2>
       </div>
-      <ul>
-        {menuItems.map((item) => (
-          <li key={item.id}>
-            <NavLink
-              to={item.path}
-              end={item.path === "/admin/dashboard"}
-              onClick={onNavigate}
-              className={({ isActive }) =>
-                `flex items-center gap-3 p-2 rounded transition ${
-                  isActive
-                    ? "bg-slate-200 text-slate-900"
-                    : "hover:bg-slate-300 hover:text-slate-900"
-                }`
-              }
-            >
-              {item.icon} {item.name}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
-    </div>
+      <div className="">
+        <ul>
+          {menuItems.map((item) => (
+            <li key={item.id}>
+              <NavLink
+                to={item.path}
+                end={item.path === "/admin/dashboard"}
+                onClick={onNavigate}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 p-2 rounded transition ${
+                    isActive
+                      ? "bg-slate-200 text-slate-900"
+                      : "hover:bg-slate-300 hover:text-slate-900"
+                  }`
+                }
+              >
+                {item.icon} {item.name}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 };
 
