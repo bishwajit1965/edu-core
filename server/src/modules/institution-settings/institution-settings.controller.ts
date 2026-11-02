@@ -3,6 +3,20 @@ import catchAsync from "../../utils/catchAsync";
 import { InstitutionSettingsService } from "./institution-settings.service";
 import sendResponse from "../../utils/sendResponse";
 
+const getPublicInstitutionSettings = catchAsync(
+  async (_req: Request, res: Response) => {
+    const result =
+      await InstitutionSettingsService.getPublicInstitutionSettingsService();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Public institution settings retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
 const getInstitutionSettings = catchAsync(
   async (_req: Request, res: Response) => {
     const result =
@@ -50,6 +64,7 @@ const updateInstitutionSettings = catchAsync(
 );
 
 export const InstitutionSettingsController = {
+  getPublicInstitutionSettings,
   getInstitutionSettings,
   createInstitutionSettings,
   updateInstitutionSettings,

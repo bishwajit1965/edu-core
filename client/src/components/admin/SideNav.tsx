@@ -31,6 +31,12 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       path: "/admin/dashboard/students",
       icon: <LucideUserCog size={size} />,
     },
+    {
+      id: 5,
+      name: "Notice",
+      path: "/admin/dashboard/notice-management",
+      icon: <LucideSettings size={size} />,
+    },
   ];
 
   return (

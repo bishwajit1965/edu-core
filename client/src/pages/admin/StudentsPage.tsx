@@ -5,14 +5,16 @@ import {
   LucideCog,
   LucideEdit,
   LucideEye,
+  LucideList,
   LucideLoaderCircle,
   LucideMapPin,
   LucidePhoneCall,
-  LucidePlusCircle,
   LucideSave,
   LucideSettings,
   LucideTrash,
+  LucideUploadCloud,
   LucideUser,
+  LucideUsers,
   LucideX,
 } from "lucide-react";
 import Button from "../../components/ui/Button";
@@ -23,14 +25,19 @@ import {
   type Student,
   type CreateStudentPayload,
   type ClearanceStatus,
+  softDeleteStudent,
+  getDeletedStudents,
+  restoreStudent,
 } from "../../features/students/studentsApi.js";
-import { showSuccess, showError } from "../../utils/alert.js";
+import { showSuccess, showError, confirmRestore } from "../../utils/alert.js";
 import Input from "../../components/ui/Input.js";
 import Select from "../../components/ui/Select";
 import Card from "../../components/ui/Card";
 import Textarea from "../../components/ui/Textarea.js";
 import Modal from "../../components/ui/Modal.js";
 import Avatar from "../../assets/AvatarSM.jpg";
+import Swal from "sweetalert2";
+import DataState from "../../components/ui/DataState.js";
 
 const occupationOptions = [
   { value: "Government Service", label: "Government Service" },
@@ -49,7 +56,8 @@ const occupationOptions = [
 
 const StudentsPage = () => {
   const [students, setStudents] = useState<Student[]>([]);
-  const [loadError, setLoadError] = useState("");
+  const [deletedStudents, setDeletedStudents] = useState<Student[]>([]);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -63,8 +71,10 @@ const StudentsPage = () => {
   const [studentPhoto, setStudentPhoto] = useState<File | null>(null);
   const [guardianPhoto, setGuardianPhoto] = useState<File | null>(null);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [showDeleted, setShowDeleted] = useState(false);
 
   console.log("Editing Student", editingStudent);
+  console.log("Deleted Student", deletedStudents);
 
   const [clearanceForm, setClearanceForm] = useState({
     duesStatus: "pending" as ClearanceStatus,
@@ -150,13 +160,27 @@ const StudentsPage = () => {
         const data = await getAllStudents();
         setStudents(data);
       } catch {
-        setLoadError("Failed to load students data.");
+        setError("Failed to load students data.");
       } finally {
         setLoading(false);
       }
     };
 
     loadStudents();
+  }, []);
+
+  useEffect(() => {
+    const loadDeletedStudents = async () => {
+      try {
+        const response = await getDeletedStudents();
+        setDeletedStudents((response as unknown as { data: Student[] }).data);
+      } catch {
+        setError("Failed to load deleted students data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadDeletedStudents();
   }, []);
 
   const handleFormChange = (
@@ -257,6 +281,7 @@ const StudentsPage = () => {
         duesClearance: { status: "pending" },
         libraryClearance: { status: "pending" },
         status: "active",
+        isDeleted: false,
       };
 
       const formData = new FormData();
@@ -358,7 +383,10 @@ const StudentsPage = () => {
 
   const chosenStudentToView = (studentId?: string | number): Student | null => {
     if (!studentId) return null;
-    return students.find((student) => student._id === studentId) ?? null;
+
+    const source = showDeleted ? deletedStudents : students;
+
+    return source.find((student) => student._id === studentId) ?? null;
   };
 
   const handleToggleModal = (studentId?: string | number) => {
@@ -471,14 +499,136 @@ const StudentsPage = () => {
     setIsModalOpen(false);
   };
 
-  // Loading status & Error message
-  if (loading) {
-    return <p className="p-6">Loading students...</p>;
-  }
+  const handleSoftDeleteStudent = async (id: string) => {
+    const result = await Swal.fire({
+      title: "Delete Student",
+      html: `
+      <div style="text-align: left;">
+        <label for="deletionReason" style="display: block; margin-bottom: 8px;padding:2px;borderRadius:3px; border:#ff0000">
+          Select deletion reason
+        </label>
 
-  if (loadError) {
-    return <p className="p-6 text-red-600">{loadError}</p>;
-  }
+        <select id="deletionReason" class="swal2-select" style="width: 100%; margin: 0;borderRadius:5px;">
+          <option value="">Select a reason</option>
+          <option value="Duplicate student record">Duplicate student record</option>
+          <option value="Incorrect admission entry">Incorrect admission entry</option>
+          <option value="Test/demo record">Test/demo record</option>
+          <option value="Entered by mistake">Entered by mistake</option>
+          <option value="other">Other</option>
+        </select>
+
+        <textarea
+          id="customDeletionReason"
+          class="swal2-textarea"
+          placeholder="Enter the exact reason..."
+          style="display: none; width: 100%; margin: 12px 0 0;"
+        ></textarea>
+      </div>
+    `,
+      showCancelButton: true,
+      confirmButtonText: "Confirm Delete",
+      cancelButtonText: "Cancel",
+      focusConfirm: false,
+
+      didOpen: () => {
+        const select = document.getElementById(
+          "deletionReason",
+        ) as HTMLSelectElement;
+
+        const textarea = document.getElementById(
+          "customDeletionReason",
+        ) as HTMLTextAreaElement;
+
+        select.addEventListener("change", () => {
+          textarea.style.display = select.value === "other" ? "block" : "none";
+
+          if (select.value !== "other") {
+            textarea.value = "";
+          }
+        });
+      },
+
+      preConfirm: () => {
+        const select = document.getElementById(
+          "deletionReason",
+        ) as HTMLSelectElement;
+
+        const textarea = document.getElementById(
+          "customDeletionReason",
+        ) as HTMLTextAreaElement;
+
+        if (!select.value) {
+          Swal.showValidationMessage("Please select a deletion reason.");
+          return false;
+        }
+
+        if (select.value === "other" && !textarea.value.trim()) {
+          Swal.showValidationMessage("Please enter the exact reason.");
+          return false;
+        }
+
+        return select.value === "other" ? textarea.value.trim() : select.value;
+      },
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await softDeleteStudent(id, result.value);
+      const updatedStudents = await getAllStudents();
+      setStudents(updatedStudents);
+
+      await Swal.fire("Deleted!", "Student deleted successfully.", "success");
+    } catch {
+      await Swal.fire("Error", "Failed to delete student.", "error");
+    }
+  };
+
+  const handleViewDeletedStudents = async () => {
+    const loadStudents = async () => {
+      try {
+        const data = await getAllStudents();
+        setStudents(data);
+        setShowDeleted(true);
+
+        // Refetch deleted students
+        const fetchedDeleted = await getDeletedStudents();
+        setDeletedStudents(
+          (fetchedDeleted as unknown as { data: Student[] }).data,
+        );
+      } catch {
+        setError("Failed to load students data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStudents();
+  };
+
+  const tableStudents = showDeleted ? deletedStudents : students;
+
+  const dataLength = showDeleted ? deletedStudents?.length : students.length;
+
+  const handleShowRegularStudents = () => {
+    setShowDeleted(false);
+  };
+
+  const handleRestoreStudent = async (id: string) => {
+    const confirmed = await confirmRestore();
+    if (!confirmed.isConfirmed) return;
+    try {
+      await restoreStudent(id);
+      const deleted = await getDeletedStudents();
+      setDeletedStudents((deleted as unknown as { data: Student[] }).data);
+      showSuccess("Restored deleted student!");
+    } catch {
+      showError("Failed to restore deleted student.");
+    }
+  };
+
+  /**---> LOADING STATUS & ERROR MESSAGES --->*/
+  if (loading || error) return <DataState loading={loading} error={error} />;
 
   return (
     <div className="space-y-6">
@@ -486,17 +636,59 @@ const StudentsPage = () => {
         title="Student Management"
         description="Manage student records, admissions, academic placement, and clearances."
         actions={
-          <Button
-            onClick={handleTableToggle}
-            icon={showForm ? LucideX : LucidePlusCircle}
-            variant={`${showForm ? "warning" : "primary"}`}
-          >
-            {editingStudent
-              ? "Cancel Update"
-              : showForm
-                ? "Cancel Admission"
-                : "Add Student"}
-          </Button>
+          <div className="lg:flex flex-1 grid justify-center gap-2 items-center">
+            <div className="aura text-emerald-600">
+              <div className="card bg-base-100 text-base-content">
+                <div className="card-body p-0.5">
+                  <h3 className="lg:text-lg text-medium font-bold border border-gray-300 py-0.5 px-2 rounded-md bg-base-100 flex items-center gap-2">
+                    <span>
+                      <LucideList size={16} />
+                    </span>
+                    {showDeleted
+                      ? "Deleted Students List"
+                      : "Regular Students List"}{" "}
+                    <span className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-xs text-white font-thin">
+                      {dataLength}
+                    </span>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <Button
+              onClick={handleTableToggle}
+              icon={showForm ? LucideX : LucideUploadCloud}
+              size="xs"
+              variant={`${showForm ? "warning" : "primary"}`}
+              title="Process admission"
+            >
+              {editingStudent
+                ? "Cancel Update"
+                : showForm
+                  ? "Cancel Admission"
+                  : "Add Student"}
+            </Button>
+            {!showDeleted && (
+              <Button
+                onClick={handleViewDeletedStudents}
+                size="xs"
+                variant={showDeleted ? "primary" : "danger"}
+                title="View deleted students"
+              >
+                <LucideSettings size={16} /> Deleted Students
+              </Button>
+            )}
+
+            {showDeleted && (
+              <Button
+                onClick={handleShowRegularStudents}
+                size="xs"
+                variant="success"
+                title="Regular students"
+              >
+                <LucideUsers size={16} /> Regular Students
+              </Button>
+            )}
+          </div>
         }
       />
 
@@ -966,7 +1158,7 @@ const StudentsPage = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {students.length === 0 ? (
+              {tableStudents.length === 0 ? (
                 <tr>
                   <td
                     colSpan={10}
@@ -976,7 +1168,7 @@ const StudentsPage = () => {
                   </td>
                 </tr>
               ) : (
-                students.map((student) => (
+                tableStudents.map((student) => (
                   <>
                     <tr key={student._id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 font-medium">
@@ -1003,16 +1195,18 @@ const StudentsPage = () => {
                         {student.libraryClearance.status.replace("_", " ")}
                       </td>
                       <td>
-                        <Button
-                          onClick={() =>
-                            handleToggleEditStudentDataLoader(student._id)
-                          }
-                          size="xs"
-                          title="Edit"
-                          icon={LucideEdit}
-                        >
-                          <span className="sr-only">Edit</span>
-                        </Button>
+                        {!student.isDeleted && (
+                          <Button
+                            onClick={() =>
+                              handleToggleEditStudentDataLoader(student._id)
+                            }
+                            size="xs"
+                            title="Edit"
+                            icon={LucideEdit}
+                          >
+                            <span className="sr-only">Edit</span>
+                          </Button>
+                        )}
                         <Button
                           onClick={() => handleToggleModal(student._id)}
                           size="xs"
@@ -1021,23 +1215,41 @@ const StudentsPage = () => {
                         >
                           <span className="sr-only">View</span>
                         </Button>
-                        <Button
-                          size="xs"
-                          variant="danger"
-                          title="Delete"
-                          icon={LucideTrash}
-                        >
-                          <span className="sr-only">Delete</span>
-                        </Button>
-                        <Button
-                          size="xs"
-                          variant="success"
-                          onClick={() => handleEditClearance(student)}
-                          icon={LucideSettings}
-                          title="Manage Clearance"
-                        >
-                          <span className="sr-only"> Manage Clearance</span>
-                        </Button>
+                        {!student.isDeleted && (
+                          <Button
+                            onClick={() => handleSoftDeleteStudent(student._id)}
+                            size="xs"
+                            variant="danger"
+                            title="Delete"
+                            icon={LucideTrash}
+                          >
+                            <span className="sr-only">Delete</span>
+                          </Button>
+                        )}
+
+                        {!student.isDeleted && (
+                          <Button
+                            size="xs"
+                            variant="success"
+                            onClick={() => handleEditClearance(student)}
+                            icon={LucideSettings}
+                            title="Manage Clearance"
+                          >
+                            <span className="sr-only"> Manage Clearance</span>
+                          </Button>
+                        )}
+
+                        {showDeleted && (
+                          <Button
+                            onClick={() => handleRestoreStudent(student._id)}
+                            size="xs"
+                            variant="primary"
+                            icon={LucideCog}
+                            title="Restore Student"
+                          >
+                            <span className="sr-only"> Restore</span>
+                          </Button>
+                        )}
                       </td>
                     </tr>
 

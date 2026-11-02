@@ -237,15 +237,21 @@ const createStudentService = async (
 };
 
 const getAllStudentsService = async () => {
-  return Student.find().sort({ createdAt: -1 });
+  return Student.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 });
 };
 
-const getStudentByIdService = async (id: string) => {
+const getStudentByIdService = async (id: string, includeDeleted = false) => {
   if (!mongoose.isValidObjectId(id)) {
     throw new AppError(400, "Invalid student ID.");
   }
 
-  const student = await Student.findById(id);
+  const filter: Record<string, unknown> = { _id: id };
+
+  if (!includeDeleted) {
+    filter.isDeleted = { $ne: true };
+  }
+
+  const student = await Student.findOne(filter);
 
   if (!student) {
     throw new AppError(404, "Student not found.");
@@ -403,9 +409,77 @@ const updateStudentService = async (
   }
 };
 
+const softDeleteStudentService = async (
+  id: string,
+  deletedBy: string,
+  deletionReason?: string,
+) => {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new AppError(400, "Invalid student ID.");
+  }
+
+  const student = await Student.findOneAndUpdate(
+    { _id: id, isDeleted: { $ne: true } },
+    {
+      $set: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedBy,
+        ...(deletionReason ? { deletionReason } : {}),
+      },
+    },
+    { new: true, runValidators: true },
+  );
+
+  if (!student) {
+    throw new AppError(404, "Student not found.");
+  }
+
+  return student;
+};
+
+const restoreStudentService = async (id: string, restoredBy: string) => {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new AppError(400, "Invalid student ID.");
+  }
+
+  const student = await Student.findOneAndUpdate(
+    { _id: id, isDeleted: true },
+    {
+      $set: {
+        isDeleted: false,
+        restoredAt: new Date(),
+        restoredBy,
+      },
+      $unset: {
+        deletedAt: 1,
+        deletedBy: 1,
+        deletionReason: 1,
+      },
+    },
+    { returnDocument: "after", runValidators: true },
+  );
+
+  if (!student) {
+    throw new AppError(404, "Deleted student not found.");
+  }
+
+  return student;
+};
+
+const getDeletedStudentsService = async () => {
+  const deleted = await Student.find({ isDeleted: true }).sort({
+    deletedAt: -1,
+  });
+  return deleted;
+};
+
 export const StudentsService = {
   createStudentService,
   getAllStudentsService,
   getStudentByIdService,
   updateStudentService,
+  softDeleteStudentService,
+  restoreStudentService,
+  getDeletedStudentsService,
 };

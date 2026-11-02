@@ -1,0 +1,128 @@
+import { Request, Response } from "express";
+import catchAsync from "../../utils/catchAsync.js";
+import sendResponse from "../../utils/sendResponse.js";
+import { NoticeService } from "./notice.service.js";
+
+const createNotice = catchAsync(async (req: Request, res: Response) => {
+  const result = await NoticeService.createNoticeService(
+    req.body,
+    (req.files ?? []) as Express.Multer.File[],
+    typeof req.user === "object" ? req.user?.email : undefined,
+  );
+
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "Notice created successfully.",
+    data: result,
+  });
+});
+
+const getAllNotices = catchAsync(async (_req: Request, res: Response) => {
+  const result = await NoticeService.getAllNoticesService();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notices retrieved successfully.",
+    data: result,
+  });
+});
+
+const getSingleNotice = catchAsync(async (req: Request, res: Response) => {
+  const result = await NoticeService.getSingleNoticeService(
+    req.params.id as string,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notice retrieved successfully.",
+    data: result,
+  });
+});
+
+const updateNotice = catchAsync(async (req: Request, res: Response) => {
+  const result = await NoticeService.updateNoticeService(
+    req.params.id as string,
+    req.body,
+    (req.files ?? []) as Express.Multer.File[],
+    typeof req.user === "object" ? req.user?.email : undefined,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notice updated successfully.",
+    data: result,
+  });
+});
+
+const publishNotice = catchAsync(async (req: Request, res: Response) => {
+  const result = await NoticeService.publishNoticeService(
+    req.params.id as string,
+    typeof req.user === "object" ? req.user?.email : undefined,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notice published successfully.",
+    data: result,
+  });
+});
+
+const archiveNotice = catchAsync(async (req: Request, res: Response) => {
+  const result = await NoticeService.archiveNoticeService(
+    req.params.id as string,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notice archived successfully.",
+    data: result,
+  });
+});
+
+const deleteNotice = catchAsync(async (req: Request, res: Response) => {
+  const result = await NoticeService.deleteNoticeService(
+    req.params.id as string,
+    typeof req.user === "object" ? req.user?.email : undefined,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notice deleted successfully.",
+    data: result,
+  });
+});
+
+const withdrawNotice = catchAsync(async (req: Request, res: Response) => {
+  const { withdrawalReason } = req.body;
+
+  const result = await NoticeService.withdrawNoticeService(
+    req.params.id as string,
+    typeof req.user === "object" ? req.user?.email : undefined,
+    withdrawalReason,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notice withdrawn successfully.",
+    data: result,
+  });
+});
+
+export const NoticeController = {
+  createNotice,
+  getAllNotices,
+  getSingleNotice,
+  updateNotice,
+  publishNotice,
+  archiveNotice,
+  deleteNotice,
+  withdrawNotice,
+};

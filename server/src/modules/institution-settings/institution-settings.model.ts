@@ -67,6 +67,13 @@ const institutionSettingsSchema = new Schema<
       timezone: { type: String, default: "Asia/Dhaka" },
       language: { type: String, default: "bn" },
     },
+    website: {
+      theme: {
+        type: String,
+        enum: ["classic", "modern", "academic", "vibrant", "premium"],
+        default: "modern",
+      },
+    },
   },
   { timestamps: true },
 );

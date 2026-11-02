@@ -6,12 +6,19 @@ import type {
 } from "react";
 import { LoaderCircle } from "lucide-react";
 
-type ButtonVariant = "primary" | "success" | "secondary" | "warning" | "danger";
+type ButtonVariant =
+  | "base"
+  | "primary"
+  | "success"
+  | "secondary"
+  | "warning"
+  | "danger"
+  | "outLine";
 type IconPosition = "left" | "right";
 type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 const sizeClasses: Record<ButtonSize, string> = {
-  xs: "px-0.75 py-0.5 text-xs gap-0.5",
+  xs: "px-0.75 py-0 text-xs gap-0.5",
   sm: "px-2 py-1.5 text-xs gap-1.5",
   md: "px-3 py-2 text-sm gap-2",
   lg: "px-5 py-3 text-base gap-2.5",
@@ -42,6 +49,8 @@ type ButtonAsLink = SharedButtonProps &
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantClasses: Record<ButtonVariant, string> = {
+  base: "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
+
   primary:
     "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
   success:
@@ -51,6 +60,9 @@ const variantClasses: Record<ButtonVariant, string> = {
   warning:
     "bg-amber-600 text-white hover:bg-amber-700 focus-visible:ring-amber-500",
   danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
+
+  outLine:
+    "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-400",
 };
 
 const baseClasses =

@@ -83,6 +83,14 @@ export interface IStudent {
   status: TStudentStatus;
   createdAt?: Date;
   updatedAt?: Date;
+
+  isDeleted: boolean;
+  deletedAt?: Date;
+  deletedBy?: string;
+  deletionReason?: string;
+
+  restoredAt: Date;
+  restoredBy: string;
 }
 
 export interface StudentModel extends Model<IStudent> {}

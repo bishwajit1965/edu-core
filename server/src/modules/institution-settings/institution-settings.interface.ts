@@ -55,6 +55,31 @@ export interface ISystemSettings {
   timezone: string;
   language: string;
 }
+export interface IWebsiteSettings {
+  theme: "classic" | "modern" | "academic" | "vibrant" | "premium";
+}
+
+export interface IPublicInstitutionSettings {
+  institution: Pick<
+    IInstitution,
+    | "name"
+    | "institutionType"
+    | "address"
+    | "phone"
+    | "email"
+    | "website"
+    | "establishedYear"
+  >;
+  branding: IBranding;
+  contact: IContact;
+  social: ISocial;
+  seo: ISEO;
+  features: Pick<
+    IFeatures,
+    "admissions" | "notices" | "events" | "literaryCorner"
+  >;
+  website: IWebsiteSettings;
+}
 
 export interface IInstitutionSettings {
   institution: IInstitution;
@@ -64,6 +89,7 @@ export interface IInstitutionSettings {
   seo: ISEO;
   features: IFeatures;
   system: ISystemSettings;
+  website: IWebsiteSettings;
   createdAt?: Date;
   updatedAt?: Date;
 }

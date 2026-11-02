@@ -1,12 +1,16 @@
-import { ZodObject, ZodError } from "zod";
 import { Request, Response, NextFunction } from "express";
+import { ZodObject, ZodError } from "zod";
 
 const validateRequest =
   (schema: ZodObject) => (req: Request, _res: Response, next: NextFunction) => {
     try {
-      schema.parse({
+      const validatedData = schema.parse({
         body: req.body,
+        params: req.params,
+        query: req.query,
       });
+
+      req.body = validatedData.body ?? req.body;
 
       next();
     } catch (error) {

@@ -67,6 +67,8 @@ const studentBaseSchema = z.object({
   boardRegistrationNumber: z.string().trim().optional(),
   registrationYear: z.number().int().min(1900).optional(),
   boardRollNumber: z.string().trim().optional(),
+  restoredAt: z.date().optional(),
+  isDeleted: z.boolean().optional(),
   duesClearance: clearanceSchema.optional(),
   libraryClearance: clearanceSchema.optional(),
   status: z

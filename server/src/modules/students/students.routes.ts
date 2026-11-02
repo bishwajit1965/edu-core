@@ -15,6 +15,14 @@ const router = Router();
 // Read students: authenticated users
 router.get("/", authMiddleware, StudentsController.getAllStudents);
 
+// Read all deleted students
+router.get(
+  "/deleted",
+  authMiddleware,
+  authorize(USER_ROLE.ADMIN),
+  StudentsController.getDeletedStudents,
+);
+
 // Read one student: authenticated users
 router.get("/:id", authMiddleware, StudentsController.getStudentById);
 
@@ -48,6 +56,22 @@ router.patch(
     next();
   },
   StudentsController.updateStudent,
+);
+
+// Soft delete student
+router.patch(
+  "/:id/soft-delete",
+  authMiddleware,
+  authorize(USER_ROLE.ADMIN),
+  StudentsController.softDeleteStudent,
+);
+
+// Restore student
+router.patch(
+  "/:id/restore",
+  authMiddleware,
+  authorize(USER_ROLE.ADMIN),
+  StudentsController.restoreStudent,
 );
 
 // Update student: admin only (controller/service to be implemented)

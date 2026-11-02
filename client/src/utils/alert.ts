@@ -37,3 +37,38 @@ export const confirmDelete = (
     confirmButtonText: "Yes, delete it!",
   });
 };
+
+export const confirmRestore = (message = "This action will restore this!") => {
+  return Swal.fire({
+    title: "Are you sure?",
+    text: message,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, restore it!",
+  });
+};
+
+export const confirmPublish = (message = "This action will publish this!") => {
+  return Swal.fire({
+    title: "Are you sure?",
+    text: message,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, publish it!",
+  });
+};
+export const confirmArchive = (message = "This action will archive this!") => {
+  return Swal.fire({
+    title: "Are you sure?",
+    text: message,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, archive it!",
+  });
+};

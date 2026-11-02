@@ -1,9 +1,83 @@
 import type { UploadApiResponse } from "cloudinary";
 import cloudinary from "../../configs/cloudinary.js";
-import type { UploadedMedia, UploadMediaOptions } from "./media.interface.js";
+import type {
+  UploadedMedia,
+  UploadMediaOptions,
+  MediaReference,
+} from "./media.interface.js";
 import { fileTypeFromBuffer } from "file-type";
 
 const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+// Helper type to normalize media input to an array of MediaReference
+type MediaInput = MediaReference | MediaReference[] | undefined | null;
+
+const normalizeMedia = (media: MediaInput): MediaReference[] => {
+  if (!media) return [];
+
+  return Array.isArray(media) ? media : [media];
+};
+
+// Function to replace media assets, deleting old ones not referenced by the updated record.
+export const replaceMedia = async (
+  oldMedia: MediaInput,
+  newMedia: MediaInput,
+): Promise<void> => {
+  const oldItems = normalizeMedia(oldMedia);
+  const newItems = normalizeMedia(newMedia);
+
+  // Preserve assets still referenced by the updated record.
+  const newPublicIds = new Set(newItems.map((item) => item.publicId));
+
+  const mediaToDelete = oldItems.filter(
+    (item) => !newPublicIds.has(item.publicId),
+  );
+
+  // Avoid duplicate deletion attempts.
+  const uniqueMedia = new Map<string, MediaReference>();
+
+  for (const item of mediaToDelete) {
+    if (!item.resourceType) {
+      throw new Error(
+        `Cannot safely delete media "${item.publicId}": resource type is missing.`,
+      );
+    }
+
+    const key = `${item.resourceType}:${item.publicId}`;
+
+    uniqueMedia.set(key, item);
+  }
+
+  await Promise.all(
+    Array.from(uniqueMedia.values()).map((item) =>
+      deleteMedia(item.publicId, item.resourceType!),
+    ),
+  );
+};
+
+export const deleteRecordMedia = async (media: MediaInput): Promise<void> => {
+  const items = normalizeMedia(media);
+
+  const uniqueMedia = new Map<string, MediaReference>();
+
+  for (const item of items) {
+    if (!item.resourceType) {
+      throw new Error(
+        `Cannot safely delete media "${item.publicId}": resource type is missing.`,
+      );
+    }
+
+    const key = `${item.resourceType}:${item.publicId}`;
+
+    uniqueMedia.set(key, item);
+  }
+
+  await Promise.all(
+    Array.from(uniqueMedia.values()).map((item) =>
+      deleteMedia(item.publicId, item.resourceType!),
+    ),
+  );
+};
 
 export const uploadMedia = async (
   file: Express.Multer.File,

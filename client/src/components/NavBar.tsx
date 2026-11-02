@@ -73,7 +73,7 @@ const NavBar = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 rounded transition ${
                       isActive
-                        ? "bg-slate-200 text-slate-900"
+                        ? "bg-red-200 text-slate-900"
                         : "hover:bg-slate-300 hover:text-slate-900"
                     }`
                   }

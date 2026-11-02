@@ -68,6 +68,8 @@ export interface Student {
   status: StudentStatus;
   createdAt?: string;
   updatedAt?: string;
+  isDeleted: boolean;
+  restoredAt: Date;
 }
 
 export interface StudentGuardian {
@@ -84,7 +86,7 @@ export interface StudentGuardian {
 
 export type CreateStudentPayload = Omit<
   Student,
-  "_id" | "studentId" | "createdAt" | "updatedAt"
+  "_id" | "studentId" | "createdAt" | "updatedAt" | "restoredAt"
 >;
 export type UpdateStudentPayload = Partial<CreateStudentPayload>;
 
@@ -133,4 +135,32 @@ export const updateStudent = async (
   );
 
   return response.data.data;
+};
+
+export const softDeleteStudent = async (
+  id: string,
+  deletionReason?: string,
+) => {
+  const response = await axiosInstance.patch<ApiResponse<Student>>(
+    `/students/${id}/soft-delete`,
+    {
+      deletionReason,
+    },
+  );
+
+  return response.data;
+};
+
+export const getDeletedStudents = async () => {
+  const response =
+    await axiosInstance.get<ApiResponse<Student>>("/students/deleted");
+  return response.data;
+};
+
+export const restoreStudent = async (id: string) => {
+  const response = await axiosInstance.patch<ApiResponse<Student>>(
+    `/students/${id}/restore`,
+  );
+
+  return response.data;
 };

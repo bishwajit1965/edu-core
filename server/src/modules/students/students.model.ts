@@ -123,6 +123,31 @@ const studentSchema = new Schema<IStudent, StudentModel>(
       default: STUDENT_STATUS.ACTIVE,
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      required: true,
+      index: true,
+    },
+    deletedAt: {
+      type: Date,
+    },
+    deletedBy: {
+      type: String,
+      trim: true,
+    },
+    deletionReason: {
+      type: String,
+      trim: true,
+    },
+    restoredAt: {
+      type: Date,
+      required: false,
+    },
+    restoredBy: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true },
 );

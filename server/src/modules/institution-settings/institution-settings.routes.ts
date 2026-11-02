@@ -11,7 +11,13 @@ import {
 
 const router = Router();
 
-// Read settings: authenticated users
+// Public fetchable settings data
+router.get(
+  "/public",
+  InstitutionSettingsController.getPublicInstitutionSettings,
+);
+
+// Read settings: authenticated users admin panel
 router.get(
   "/",
   authMiddleware,
@@ -36,4 +42,3 @@ router.patch(
 );
 
 export default router;
-// export const InstitutionSettingsRoutes = router;

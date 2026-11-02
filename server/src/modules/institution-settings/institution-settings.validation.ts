@@ -2,7 +2,6 @@ import { z } from "zod";
 
 const institutionSchema = z.object({
   name: z.string().trim().min(1).max(200),
-  // institutionType: z.string().trim().min(1),
   institutionType: z.enum(["SCHOOL", "COLLEGE", "SCHOOL_AND_COLLEGE"]),
   eiin: z.string().trim().optional(),
   code: z.string().trim().min(1),
@@ -65,6 +64,10 @@ const systemSchema = z.object({
   language: z.string().trim().min(2).optional(),
 });
 
+const websiteSchema = z.object({
+  theme: z.enum(["classic", "modern", "academic", "vibrant", "premium"]),
+});
+
 export const createInstitutionSettingsValidationSchema = z.object({
   body: z.object({
     institution: institutionSchema,
@@ -74,6 +77,7 @@ export const createInstitutionSettingsValidationSchema = z.object({
     seo: seoSchema.optional(),
     features: featuresSchema.optional(),
     system: systemSchema.optional(),
+    website: websiteSchema.partial().optional(),
   }),
 });
 
@@ -87,6 +91,7 @@ export const updateInstitutionSettingsValidationSchema = z.object({
       seo: seoSchema.partial().optional(),
       features: featuresSchema.partial().optional(),
       system: systemSchema.partial().optional(),
+      website: websiteSchema.partial().optional(),
     })
     .refine((body) => Object.keys(body).length > 0, {
       message: "At least one settings section must be provided.",

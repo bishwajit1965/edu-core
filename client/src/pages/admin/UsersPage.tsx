@@ -79,7 +79,6 @@ const UsersPage = () => {
       }
     } catch (error) {
       console.error("Error in deleting user", error);
-
       showError("Failed to delete user. Please try again.");
     }
   };

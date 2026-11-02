@@ -4,6 +4,7 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import {
+  createInstitutionSettings,
   getInstitutionSettings,
   updateInstitutionSettings,
   type InstitutionSettings,
@@ -14,12 +15,68 @@ import { LucideLoaderCircle, LucideSave } from "lucide-react";
 import Checkbox from "../../components/ui/Checkbox";
 import { showSuccess, showError } from "../../utils/alert.js";
 
+const defaultSettings: InstitutionSettings = {
+  institution: {
+    name: "",
+    institutionType: "SCHOOL",
+    eiin: "",
+    code: "",
+    address: "",
+    phone: "",
+    email: "",
+    establishedYear: undefined,
+    website: "",
+    mpoCode: "",
+    nuCode: "",
+  },
+  branding: {
+    logo: "",
+    favicon: "",
+    primaryColor: "#2563eb",
+  },
+  contact: {
+    phone: "",
+    email: "",
+    address: "",
+    mapUrl: "",
+  },
+  social: {
+    facebook: "",
+    youtube: "",
+    instagram: "",
+    linkedin: "",
+  },
+  seo: {
+    title: "",
+    description: "",
+    keywords: [],
+  },
+  features: {
+    admissions: true,
+    notices: true,
+    events: true,
+    literaryCorner: true,
+    studentPortal: false,
+    guardianPortal: false,
+  },
+  system: {
+    maintenanceMode: false,
+    registrationEnabled: true,
+    timezone: "Asia/Dhaka",
+    language: "bn",
+  },
+  website: {
+    theme: "modern",
+  },
+};
+
 const SettingsPage = () => {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<InstitutionSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [keywordsText, setKeywordsText] = useState("");
+  const [settingsExist, setSettingsExist] = useState(true);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -27,7 +84,19 @@ const SettingsPage = () => {
         const data = await getInstitutionSettings();
         setSettings(data);
         setKeywordsText(data.seo.keywords.join(", "));
-      } catch {
+        setSettingsExist(true);
+      } catch (error) {
+        const status = (error as { response?: { status?: number } })?.response
+          ?.status;
+
+        if (status === 404) {
+          setSettings(defaultSettings);
+          setKeywordsText("");
+          setSettingsExist(false);
+        } else {
+          console.error("Failed to load institution settings:", error);
+          setLoadError("Failed to load institution settings.");
+        }
         setLoadError("Failed to load institution settings.");
       } finally {
         setLoading(false);
@@ -37,9 +106,11 @@ const SettingsPage = () => {
     loadSettings();
   }, []);
 
-  const handleInstitutionChange = (
-    field: keyof InstitutionSettings["institution"],
-    value: string,
+  const handleInstitutionChange = <
+    K extends keyof InstitutionSettings["institution"],
+  >(
+    field: K,
+    value: InstitutionSettings["institution"][K],
   ) => {
     setSettings((previous) =>
       previous
@@ -156,13 +227,30 @@ const SettingsPage = () => {
     );
   };
 
+  const handleWebsiteChange = <K extends keyof InstitutionSettings["website"]>(
+    field: K,
+    value: InstitutionSettings["website"][K],
+  ) => {
+    setSettings((previous) =>
+      previous
+        ? {
+            ...previous,
+            website: {
+              ...previous.website,
+              [field]: value,
+            },
+          }
+        : previous,
+    );
+  };
+
   const handleSave = async () => {
     if (!settings) return;
 
     setSaving(true);
 
     try {
-      const updatedSettings = await updateInstitutionSettings({
+      const payload: Partial<InstitutionSettings> = {
         institution: settings.institution,
         branding: settings.branding,
         seo: settings.seo,
@@ -170,26 +258,61 @@ const SettingsPage = () => {
         social: settings.social,
         features: settings.features,
         system: settings.system,
-      });
+        website: settings.website,
+      };
 
-      setSettings((previous) =>
-        previous
-          ? {
-              ...previous,
-              ...updatedSettings,
-            }
-          : updatedSettings,
-      );
-      if (updatedSettings) {
-        showSuccess("Institution settings saved!");
-      }
+      const savedSettings = settingsExist
+        ? await updateInstitutionSettings(payload)
+        : await createInstitutionSettings(settings);
+
+      setSettings(savedSettings);
+      setSettingsExist(true);
+      setKeywordsText(savedSettings.seo.keywords.join(", "));
+
+      showSuccess("Institution settings saved!");
     } catch (error) {
       console.error("Failed to save institution settings:", error);
-      showError("Woops! settings update failed!");
+      showError("Oops! Settings save failed!");
     } finally {
       setSaving(false);
     }
   };
+
+  // const handleSave = async () => {
+  //   if (!settings) return;
+
+  //   setSaving(true);
+
+  //   try {
+  //     const updatedSettings = await updateInstitutionSettings({
+  //       institution: settings.institution,
+  //       branding: settings.branding,
+  //       seo: settings.seo,
+  //       contact: settings.contact,
+  //       social: settings.social,
+  //       features: settings.features,
+  //       system: settings.system,
+  //       website: settings.website,
+  //     });
+
+  //     setSettings((previous) =>
+  //       previous
+  //         ? {
+  //             ...previous,
+  //             ...updatedSettings,
+  //           }
+  //         : updatedSettings,
+  //     );
+  //     if (updatedSettings) {
+  //       showSuccess("Institution settings saved!");
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to save institution settings:", error);
+  //     showError("Woops! settings update failed!");
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
 
   if (loading) {
     return <p className="p-6">Loading institution settings...</p>;
@@ -217,7 +340,7 @@ const SettingsPage = () => {
       />
 
       {/* Institution Info Section */}
-      <Card
+      {/* <Card
         title="Institution Information"
         description="Basic details about your school or college."
         className=""
@@ -313,8 +436,146 @@ const SettingsPage = () => {
             }
           />
         </div>
-      </Card>
+      </Card> */}
+      <Card
+        title="Institution Information"
+        description="Basic details about your school or college."
+        className=""
+      >
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Input
+            label="Institution Name"
+            name="name"
+            placeholder="Enter institution name"
+            value={settings?.institution.name ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("name", event.target.value)
+            }
+            required
+          />
 
+          <Select
+            label="Institution Type"
+            name="type"
+            value={settings?.institution.institutionType ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange(
+                "institutionType",
+                event.target
+                  .value as InstitutionSettings["institution"]["institutionType"],
+              )
+            }
+            options={[
+              { label: "School", value: "SCHOOL" },
+              { label: "College", value: "COLLEGE" },
+              { label: "School & College", value: "SCHOOL_AND_COLLEGE" },
+            ]}
+            placeholder="Select institution type"
+            required
+          />
+
+          <Input
+            label="EIIN"
+            name="eiin"
+            placeholder="Enter EIIN"
+            value={settings?.institution.eiin ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("eiin", event.target.value)
+            }
+          />
+
+          <Input
+            label="Institution Code"
+            name="code"
+            placeholder="Enter institution code"
+            value={settings?.institution.code ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("code", event.target.value)
+            }
+            required
+          />
+
+          <Input
+            label="Established Year"
+            name="establishedYear"
+            type="number"
+            placeholder="e.g. 1985"
+            value={settings?.institution.establishedYear ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange(
+                "establishedYear",
+                event.target.value === ""
+                  ? undefined
+                  : Number(event.target.value),
+              )
+            }
+          />
+
+          <Input
+            label="MPO Code"
+            name="mpoCode"
+            placeholder="Enter MPO code"
+            value={settings?.institution.mpoCode ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("mpoCode", event.target.value)
+            }
+          />
+
+          <Input
+            label="NU Code"
+            name="nuCode"
+            placeholder="Enter National University code"
+            value={settings?.institution.nuCode ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("nuCode", event.target.value)
+            }
+          />
+
+          <Input
+            label="Phone"
+            name="phone"
+            placeholder="Enter phone number"
+            value={settings?.institution.phone ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("phone", event.target.value)
+            }
+          />
+
+          <Input
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="Enter email address"
+            value={settings?.institution.email ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("email", event.target.value)
+            }
+          />
+
+          <Input
+            label="Website"
+            name="website"
+            type="url"
+            placeholder="https://example.com"
+            value={settings?.institution.website ?? ""}
+            onChange={(event) =>
+              handleInstitutionChange("website", event.target.value)
+            }
+          />
+
+          <div className="md:col-span-2">
+            <Input
+              label="Address"
+              name="address"
+              placeholder="Enter institution address"
+              value={settings?.institution.address ?? ""}
+              onChange={(event) =>
+                handleInstitutionChange("address", event.target.value)
+              }
+            />
+          </div>
+        </div>
+      </Card>
       {/* Branding Section */}
       <Card
         title="Branding"
@@ -352,6 +613,33 @@ const SettingsPage = () => {
             onChange={(event) =>
               handleBrandingChange("favicon", event.target.value)
             }
+          />
+        </div>
+      </Card>
+
+      {/* Website Theme Section */}
+      <Card
+        title="Website Theme"
+        description="Choose the visual theme for your institution's public website."
+      >
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Select
+            label="Select Theme"
+            name="theme"
+            value={settings?.website.theme ?? "modern"}
+            onChange={(event) =>
+              handleWebsiteChange(
+                "theme",
+                event.target.value as InstitutionSettings["website"]["theme"],
+              )
+            }
+            options={[
+              { label: "Classic & Traditional", value: "classic" },
+              { label: "Modern & Professional", value: "modern" },
+              { label: "Academic & Editorial", value: "academic" },
+              { label: "Vibrant & Student-Friendly", value: "vibrant" },
+              { label: "Premium & Minimal", value: "premium" },
+            ]}
           />
         </div>
       </Card>
@@ -581,7 +869,7 @@ const SettingsPage = () => {
             label="Maintenance Mode"
             description="Indicate that the institution website is under maintenance."
             name="maintenanceMode"
-            checked={settings?.system.maintenanceMode ?? false}
+            checked={settings?.system?.maintenanceMode ?? false}
             onChange={(event) =>
               handleSystemChange("maintenanceMode", event.target.checked)
             }
@@ -591,7 +879,7 @@ const SettingsPage = () => {
             label="Registration Enabled"
             description="Allow registration where supported by the application."
             name="registrationEnabled"
-            checked={settings?.system.registrationEnabled ?? false}
+            checked={settings?.system?.registrationEnabled ?? false}
             onChange={(event) =>
               handleSystemChange("registrationEnabled", event.target.checked)
             }
@@ -601,7 +889,7 @@ const SettingsPage = () => {
             <Input
               label="Timezone"
               name="timezone"
-              value={settings?.system.timezone ?? "Asia/Dhaka"}
+              value={settings?.system?.timezone ?? "Asia/Dhaka"}
               onChange={(event) =>
                 handleSystemChange("timezone", event.target.value)
               }
@@ -611,7 +899,7 @@ const SettingsPage = () => {
             <Select
               label="Language"
               name="language"
-              value={settings?.system.language ?? "bn"}
+              value={settings?.system?.language ?? "bn"}
               onChange={(event) =>
                 handleSystemChange("language", event.target.value)
               }

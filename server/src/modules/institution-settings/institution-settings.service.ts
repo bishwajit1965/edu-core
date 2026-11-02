@@ -1,6 +1,25 @@
 import AppError from "../../errors/AppError";
 import { IInstitutionSettings } from "./institution-settings.interface";
 import { InstitutionSettings } from "./institution-settings.model";
+import type { IPublicInstitutionSettings } from "./institution-settings.interface.js";
+
+const getPublicInstitutionSettingsService =
+  async (): Promise<IPublicInstitutionSettings> => {
+    const settings = await InstitutionSettings.findOne()
+      .select(
+        "institution.name institution.institutionType institution.address institution.phone institution.email institution.website institution.establishedYear branding contact social seo features.admissions features.notices features.events features.literaryCorner website.theme",
+      )
+      .lean();
+
+    if (!settings) {
+      throw new AppError(
+        404,
+        "Institution settings have not been configured yet.",
+      );
+    }
+
+    return settings as unknown as IPublicInstitutionSettings;
+  };
 
 const getInstitutionSettingsService = async () => {
   const settings = await InstitutionSettings.findOne();
@@ -48,6 +67,7 @@ const updateInstitutionSettingsService = async (
     "seo",
     "features",
     "system",
+    "website",
   ] as const;
 
   for (const section of allowedSection) {
@@ -63,6 +83,7 @@ const updateInstitutionSettingsService = async (
 };
 
 export const InstitutionSettingsService = {
+  getPublicInstitutionSettingsService,
   getInstitutionSettingsService,
   createInstitutionSettingsService,
   updateInstitutionSettingsService,
