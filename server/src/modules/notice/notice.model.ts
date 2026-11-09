@@ -86,12 +86,14 @@ const noticeSchema = new Schema<INotice, NoticeModel>(
     },
 
     createdBy: {
-      type: String,
+      type: Schema.Types.ObjectId as any,
+      ref: "User",
       required: true,
       trim: true,
     },
     approvedBy: {
-      type: String,
+      type: Schema.Types.ObjectId as any,
+      ref: "User",
       trim: true,
     },
     approvedAt: {
@@ -103,7 +105,8 @@ const noticeSchema = new Schema<INotice, NoticeModel>(
     },
 
     updatedBy: {
-      type: String,
+      type: Schema.Types.ObjectId as any,
+      ref: "User",
       trim: true,
     },
     publishedAt: {
@@ -112,7 +115,6 @@ const noticeSchema = new Schema<INotice, NoticeModel>(
     expiresAt: {
       type: Date,
     },
-
     isDeleted: {
       type: Boolean,
       default: false,
@@ -123,7 +125,8 @@ const noticeSchema = new Schema<INotice, NoticeModel>(
       type: Date,
     },
     deletedBy: {
-      type: String,
+      type: Schema.Types.ObjectId as any,
+      ref: "User",
       trim: true,
     },
     deletionReason: {
@@ -134,7 +137,8 @@ const noticeSchema = new Schema<INotice, NoticeModel>(
       type: Date,
     },
     withdrawnBy: {
-      type: String,
+      type: Schema.Types.ObjectId as any,
+      ref: "User",
       trim: true,
     },
     withdrawalReason: {

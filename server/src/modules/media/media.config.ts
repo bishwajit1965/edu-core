@@ -15,12 +15,13 @@ export const MEDIA_MODULES = {
     maxFiles: 10,
   },
 
-  students: {
-    folder: "educore/students",
+  themes: {
+    folder: "educore/themes",
     allowedMimeTypes: {
       "image/jpeg": "image",
       "image/png": "image",
       "image/webp": "image",
+      "application/pdf": "raw",
     },
     maxFileSizeBytes: 5 * MB,
     maxFiles: 10,

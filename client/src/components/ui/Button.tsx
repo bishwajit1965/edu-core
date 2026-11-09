@@ -13,7 +13,7 @@ type ButtonVariant =
   | "secondary"
   | "warning"
   | "danger"
-  | "outLine";
+  | "outline";
 type IconPosition = "left" | "right";
 type ButtonSize = "xs" | "sm" | "md" | "lg";
 
@@ -53,16 +53,19 @@ const variantClasses: Record<ButtonVariant, string> = {
 
   primary:
     "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
+
   success:
     "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-500",
+
   secondary:
     "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-400",
+
   warning:
     "bg-amber-600 text-white hover:bg-amber-700 focus-visible:ring-amber-500",
   danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
 
-  outLine:
-    "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-400",
+  outline:
+    "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-400 hover:bg-gray-800 hover:text-base-100",
 };
 
 const baseClasses =

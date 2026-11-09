@@ -37,6 +37,18 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       path: "/admin/dashboard/notice-management",
       icon: <LucideSettings size={size} />,
     },
+    {
+      id: 6,
+      name: "Test",
+      path: "/admin/dashboard/test",
+      icon: <LucideSettings size={size} />,
+    },
+    {
+      id: 7,
+      name: "Themes",
+      path: "/admin/dashboard/theme-management",
+      icon: <LucideSettings size={size} />,
+    },
   ];
 
   return (

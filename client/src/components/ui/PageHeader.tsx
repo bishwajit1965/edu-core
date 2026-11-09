@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Badge from "./Badge";
 
 interface PageHeaderProps {
   title: string;
@@ -18,7 +19,8 @@ const PageHeader = ({
       <div>
         <div className="flex items-center gap-2">
           <h1 className="lg:text-2xl text-xl font-bold text-gray-900">
-            {title}
+            <span>{title}</span>
+            {countBadge && <Badge> {countBadge} </Badge>}
           </h1>
           {countBadge}
         </div>
@@ -29,9 +31,7 @@ const PageHeader = ({
       </div>
 
       {actions && (
-        <div className="flex flex-wrap items-center gap-2">
-          {actions} {countBadge}
-        </div>
+        <div className="flex flex-wrap items-center gap-2">{actions}</div>
       )}
     </div>
   );

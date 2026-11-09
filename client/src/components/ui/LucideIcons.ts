@@ -162,6 +162,8 @@ import {
   DownloadCloud,
   DownloadCloudIcon,
   XCircle,
+  ArrowUpDown,
+  Paperclip,
 } from "lucide-react";
 
 // Central registry
@@ -176,6 +178,8 @@ export const LucideIcon = {
   ArrowRight,
   ArrowBigLeft,
   ArrowBigRightDash,
+  ArrowUpDown,
+
   BanknoteArrowDown,
   BanknoteArrowUp,
   Calendar,
@@ -228,6 +232,7 @@ export const LucideIcon = {
   LaughIcon,
   Glasses,
   Grid,
+  Paperclip,
   Hammer,
   Home,
   Heart,

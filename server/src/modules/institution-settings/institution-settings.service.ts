@@ -3,6 +3,21 @@ import { IInstitutionSettings } from "./institution-settings.interface";
 import { InstitutionSettings } from "./institution-settings.model";
 import type { IPublicInstitutionSettings } from "./institution-settings.interface.js";
 
+const createInstitutionSettingsService = async (
+  payload: IInstitutionSettings,
+) => {
+  const existingSettings = await InstitutionSettings.findOne();
+  if (existingSettings) {
+    throw new AppError(
+      409,
+      "Institution settings have already been configured.",
+    );
+  }
+
+  const settings = await InstitutionSettings.create(payload);
+  return settings;
+};
+
 const getPublicInstitutionSettingsService =
   async (): Promise<IPublicInstitutionSettings> => {
     const settings = await InstitutionSettings.findOne()
@@ -29,21 +44,6 @@ const getInstitutionSettingsService = async () => {
       "Institution settings have not been configured yet.",
     );
   }
-  return settings;
-};
-
-const createInstitutionSettingsService = async (
-  payload: IInstitutionSettings,
-) => {
-  const existingSettings = await InstitutionSettings.findOne();
-  if (existingSettings) {
-    throw new AppError(
-      409,
-      "Institution settings have already been configured.",
-    );
-  }
-
-  const settings = await InstitutionSettings.create(payload);
   return settings;
 };
 
@@ -83,8 +83,8 @@ const updateInstitutionSettingsService = async (
 };
 
 export const InstitutionSettingsService = {
+  createInstitutionSettingsService,
   getPublicInstitutionSettingsService,
   getInstitutionSettingsService,
-  createInstitutionSettingsService,
   updateInstitutionSettingsService,
 };

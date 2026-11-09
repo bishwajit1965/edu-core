@@ -7,7 +7,7 @@ const createNotice = catchAsync(async (req: Request, res: Response) => {
   const result = await NoticeService.createNoticeService(
     req.body,
     (req.files ?? []) as Express.Multer.File[],
-    typeof req.user === "object" ? req.user?.email : undefined,
+    typeof req.user === "object" ? req.user?.userId : undefined,
   );
 
   sendResponse(res, {
@@ -25,6 +25,17 @@ const getAllNotices = catchAsync(async (_req: Request, res: Response) => {
     statusCode: 200,
     success: true,
     message: "Notices retrieved successfully.",
+    data: result,
+  });
+});
+
+const getAllPublicNotices = catchAsync(async (_req: Request, res: Response) => {
+  const result = await NoticeService.getAllPublishedNoticesService();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Public notices fetched",
     data: result,
   });
 });
@@ -47,7 +58,7 @@ const updateNotice = catchAsync(async (req: Request, res: Response) => {
     req.params.id as string,
     req.body,
     (req.files ?? []) as Express.Multer.File[],
-    typeof req.user === "object" ? req.user?.email : undefined,
+    typeof req.user === "object" ? req.user?.userId : undefined,
   );
 
   sendResponse(res, {
@@ -61,7 +72,7 @@ const updateNotice = catchAsync(async (req: Request, res: Response) => {
 const publishNotice = catchAsync(async (req: Request, res: Response) => {
   const result = await NoticeService.publishNoticeService(
     req.params.id as string,
-    typeof req.user === "object" ? req.user?.email : undefined,
+    typeof req.user === "object" ? req.user?.userId : undefined,
   );
 
   sendResponse(res, {
@@ -88,7 +99,7 @@ const archiveNotice = catchAsync(async (req: Request, res: Response) => {
 const deleteNotice = catchAsync(async (req: Request, res: Response) => {
   const result = await NoticeService.deleteNoticeService(
     req.params.id as string,
-    typeof req.user === "object" ? req.user?.email : undefined,
+    typeof req.user === "object" ? req.user?.userId : undefined,
   );
 
   sendResponse(res, {
@@ -104,7 +115,7 @@ const withdrawNotice = catchAsync(async (req: Request, res: Response) => {
 
   const result = await NoticeService.withdrawNoticeService(
     req.params.id as string,
-    typeof req.user === "object" ? req.user?.email : undefined,
+    typeof req.user === "object" ? req.user?.userId : undefined,
     withdrawalReason,
   );
 
@@ -119,6 +130,7 @@ const withdrawNotice = catchAsync(async (req: Request, res: Response) => {
 export const NoticeController = {
   createNotice,
   getAllNotices,
+  getAllPublicNotices,
   getSingleNotice,
   updateNotice,
   publishNotice,

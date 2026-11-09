@@ -46,9 +46,21 @@ export interface NoticeTarget {
   section?: string;
 }
 
+export interface IUserReference {
+  _id: string;
+  name: string;
+  email: string;
+  updatedBy?: IUserReference | string;
+  approvedBy?: IUserReference | string;
+  withdrawnBy?: IUserReference | string;
+  deletedBy?: IUserReference | string;
+}
 export interface MediaReference {
   url: string;
   publicId: string;
+  resourceType?: "image" | "raw" | "video";
+  format: string;
+  bytes: number;
 }
 
 export interface Notice {
@@ -61,19 +73,20 @@ export interface Notice {
   attachments: MediaReference[];
   status: NoticeStatus;
   createdBy: string;
-  approvedBy?: string;
+  approvedBy?: IUserReference | string;
   approvedAt?: string;
   rejectionReason?: string;
   publishedAt?: string;
   expiresAt?: string;
   isDeleted: boolean;
   deletedAt?: string;
-  deletedBy?: string;
+  deletedBy?: IUserReference | string;
   deletionReason?: string;
   createdAt?: string;
   updatedAt?: string;
+  updatedBy?: IUserReference | string;
   withdrawnAt?: string;
-  withdrawnBy?: string;
+  withdrawnBy?: IUserReference | string;
   withdrawalReason?: string;
 }
 
@@ -102,6 +115,15 @@ interface ApiResponse<T> {
 // API endpoint
 const NOTICE_ENDPOINT = "/notices";
 
+// Publicly visible notices fetched
+export const getPublicNotices = async (): Promise<Notice[]> => {
+  const response = await axiosInstance.get<ApiResponse<Notice[]>>(
+    `${NOTICE_ENDPOINT}/public`,
+  );
+
+  return response.data.data;
+};
+
 // Get all notices
 export const getAllNotices = async (): Promise<Notice[]> => {
   const response =
@@ -119,15 +141,29 @@ export const getNoticeById = async (id: string): Promise<Notice> => {
   return response.data.data;
 };
 
+// FORM DATA HELPER
+const buildNoticeFormData = (
+  payload: CreateNoticePayload | UpdateNoticePayload,
+  files: File[] | [],
+): FormData => {
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(payload));
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
+  return formData;
+};
+
 // Create notice
 export const createNotice = async (
   payload: CreateNoticePayload,
+  files: File[] = [],
 ): Promise<Notice> => {
+  const hasAttachments = files.length > 0;
   const response = await axiosInstance.post<ApiResponse<Notice>>(
     NOTICE_ENDPOINT,
-    payload,
+    hasAttachments ? buildNoticeFormData(payload, files) : payload,
   );
-
   return response.data.data;
 };
 
@@ -135,10 +171,12 @@ export const createNotice = async (
 export const updateNotice = async (
   id: string,
   payload: UpdateNoticePayload,
+  files: File[] = [],
 ): Promise<Notice> => {
+  const hasAttachments = files.length > 0;
   const response = await axiosInstance.patch<ApiResponse<Notice>>(
     `${NOTICE_ENDPOINT}/${id}`,
-    payload,
+    hasAttachments ? buildNoticeFormData(payload, files) : payload,
   );
 
   return response.data.data;

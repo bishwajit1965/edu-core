@@ -92,6 +92,18 @@ const getAllNoticesService = async () => {
   return notices;
 };
 
+// Fetching notices for public view
+const getAllPublishedNoticesService = async () => {
+  const notices = await Notice.find({
+    status: "PUBLISHED",
+    isDeleted: false,
+    withdrawnAt: null,
+    $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
+  }).sort({ publishedAt: -1 });
+
+  return notices;
+};
+
 const getSingleNoticeService = async (id: string) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid notice ID.");
@@ -100,7 +112,12 @@ const getSingleNoticeService = async (id: string) => {
   const notice = await Notice.findOne({
     _id: id,
     isDeleted: false,
-  });
+  })
+    .populate("createdBy", "name email")
+    .populate("updatedBy", "name email")
+    .populate("approvedBy", "name email")
+    .populate("withdrawnBy", "name email")
+    .populate("deletedBy", "name email");
 
   if (!notice) {
     throw new AppError(404, "Notice not found.");
@@ -363,6 +380,7 @@ const deleteNoticeService = async (id: string, deletedBy: string) => {
 export const NoticeService = {
   createNoticeService,
   getAllNoticesService,
+  getAllPublishedNoticesService,
   getSingleNoticeService,
   updateNoticeService,
   publishNoticeService,

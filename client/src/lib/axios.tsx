@@ -20,6 +20,14 @@ axiosInstance.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    if (!config.headers["Content-Type"]) {
+      // set Content-type to JSON if not already specified
+      if (config.data instanceof FormData) {
+        delete config.headers["Content-Type"];
+      } else {
+        config.headers["Content-Type"] = "application/json";
+      }
+    }
 
     return config;
   },

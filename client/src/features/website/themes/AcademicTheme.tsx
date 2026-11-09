@@ -1,14 +1,11 @@
+import Logo from "../../../components/ui/Logo";
+import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
-import {
-  ArrowRight,
-  BookOpen,
-  GraduationCap,
-  Users,
-  Award,
-} from "lucide-react";
+import { ArrowRight, BookOpen, Users, Award } from "lucide-react";
 
 interface AcademicThemeProps {
   settings: PublicInstitutionSettings;
+  notices: Notice[];
 }
 
 const highlights = [
@@ -30,7 +27,7 @@ const highlights = [
 ];
 
 const AcademicTheme = ({ settings }: AcademicThemeProps) => {
-  const { institution, branding, contact, features } = settings;
+  const { institution, branding, features } = settings;
   const primary = branding?.primaryColor || "#155e75";
 
   return (
@@ -38,7 +35,8 @@ const AcademicTheme = ({ settings }: AcademicThemeProps) => {
       <header className="border-b border-slate-200">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 py-5">
           <div className="flex items-center gap-3">
-            {branding?.logo ? (
+            <Logo primaryColor={primary} />
+            {/* {branding?.logo ? (
               <img
                 src={branding.logo}
                 alt="Institution logo"
@@ -46,7 +44,7 @@ const AcademicTheme = ({ settings }: AcademicThemeProps) => {
               />
             ) : (
               <GraduationCap size={44} style={{ color: primary }} />
-            )}
+            )} */}
             <div>
               <h1
                 className="text-xl font-bold md:text-2xl"
@@ -57,6 +55,7 @@ const AcademicTheme = ({ settings }: AcademicThemeProps) => {
               <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
                 {institution.institutionType || "Education and Learning"}
               </p>
+              <p>{institution.address}</p>
             </div>
           </div>
           <nav className="flex flex-wrap gap-5 text-sm font-medium text-slate-600">
@@ -111,7 +110,7 @@ const AcademicTheme = ({ settings }: AcademicThemeProps) => {
           <img
             src="https://images.unsplash.com/photo-1592930954854-7d00c87d0cf4?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D"
             alt="Students on campus"
-            className="h-72 w-full rounded-xl object-cover shadow-xl md:h-[420px]"
+            className="h-72 w-full rounded-xl object-cover shadow-xl md:h-105"
           />
         </div>
       </section>
@@ -184,7 +183,7 @@ const AcademicTheme = ({ settings }: AcademicThemeProps) => {
         </section>
       )}
 
-      <footer id="contact" className="bg-slate-900 px-5 py-9 text-white">
+      {/* <footer id="contact" className="bg-slate-900 px-5 py-9 text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-5">
           <div>
             <h3 className="text-xl font-bold">{institution.name}</h3>
@@ -197,7 +196,7 @@ const AcademicTheme = ({ settings }: AcademicThemeProps) => {
             <p>{contact?.email || institution.email}</p>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </main>
   );
 };

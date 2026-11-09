@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth.js";
 import {
   getPublicInstitutionSettings,
   type PublicInstitutionSettings,
 } from "../../features/settings/settingsApi.js";
-// import { showError } from "../../utils/alert.js";
+
 import ThemeResolver from "../../features/website/ThemeResolver.js";
+import {
+  getPublicNotices,
+  type Notice,
+} from "../../features/notice/noticeApi.js";
 
 const Home = () => {
   const [settings, setSettings] = useState<PublicInstitutionSettings | null>(
@@ -13,6 +16,10 @@ const Home = () => {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Notice related data state
+  const [notices, setNotices] = useState<Notice[]>([]);
+  console.log("Notices in home page", notices);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -31,17 +38,23 @@ const Home = () => {
     loadSettings();
   }, []);
 
-  const { user } = useAuth() as {
-    user?: {
-      name?: string;
-      email?: string;
-      role?: "ADMIN" | "USER" | string;
-    } | null;
-  };
+  // Publicly visible notices fetched
+  useEffect(() => {
+    const loadNotices = async () => {
+      setLoading(true);
+      try {
+        const data = await getPublicNotices();
+        setNotices(data);
+      } catch (error) {
+        console.error("Failed to load website settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadNotices();
+  }, []);
+
   console.log("Settings in home page", settings);
-  const userLabel = user
-    ? `Logged in as ${user.name || user.email}`
-    : "Not logged in";
 
   if (loading) {
     return <div className="p-8 text-center">Loading website...</div>;
@@ -57,23 +70,7 @@ const Home = () => {
 
   return (
     <div className="">
-      {/* <h1 className="lg:text-2xl text-xl font-bold">Home Page</h1>
-      <p>{userLabel}</p>
-
-      <p>
-        {user && user.role === "ADMIN"
-          ? "You are an admin"
-          : "You are not an admin"}
-      </p>
-      <p>
-        {user ? (
-          <span>Logged in with access to additional features.</span>
-        ) : (
-          <span>Please log in to access more features.</span>
-        )}
-      </p> */}
-
-      <ThemeResolver settings={settings} />
+      <ThemeResolver settings={settings} notices={notices} />
     </div>
   );
 };

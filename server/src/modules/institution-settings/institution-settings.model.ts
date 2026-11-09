@@ -70,9 +70,16 @@ const institutionSettingsSchema = new Schema<
     website: {
       theme: {
         type: String,
-        enum: ["classic", "modern", "academic", "vibrant", "premium"],
+        required: true,
+        trim: true,
+        lowercase: true,
         default: "modern",
       },
+      // theme: {
+      //   type: String,
+      //   enum: ["classic", "modern", "academic", "vibrant", "premium"],
+      //   default: "modern",
+      // },
     },
   },
   { timestamps: true },

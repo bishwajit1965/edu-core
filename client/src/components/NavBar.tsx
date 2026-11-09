@@ -1,14 +1,28 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { LucideUserCheck2 } from "lucide-react";
+import Logo from "./ui/Logo";
+import type { PublicInstitutionSettings } from "../features/settings/settingsApi.js";
 
-const NavBar = () => {
+const NavBar = ({
+  settings,
+}: {
+  settings?: PublicInstitutionSettings | null;
+}) => {
   const { user, logout } = useAuth() as {
     user?: { avatar?: string; role?: string };
     logout: () => void;
   };
+  const { institution, branding, website } = (settings ??
+    {}) as PublicInstitutionSettings & {
+    website?: { name?: string; theme?: unknown };
+  };
+  const primaryColor = branding?.primaryColor;
 
-  console.log("USER IN NAVBAR", user);
+  const theme = website?.theme;
+
+  console.log("THeme in navbar", theme);
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -34,15 +48,19 @@ const NavBar = () => {
     },
     {
       id: 4,
+      name: "Notices",
+      path: "/notices",
+    },
+    {
+      id: 5,
       name: "Profile",
       path: "/profile",
     },
   ];
-
   return (
-    <div className="navbar bg-base-100 shadow-sm sticky top-0 lg:px-24">
+    <div className="navbar bg-base-200 shadow-sm sticky top-0 lg:px-24 z-50">
       <div className="navbar-start">
-        <div className="dropdown  lg:hidden flex">
+        <div className="dropdown lg:hidden flex">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
             <svg
               aria-label="Menu"
@@ -73,7 +91,7 @@ const NavBar = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 rounded transition ${
                       isActive
-                        ? "bg-red-200 text-slate-900"
+                        ? "bg-base-200 text-slate-900"
                         : "hover:bg-slate-300 hover:text-slate-900"
                     }`
                   }
@@ -84,23 +102,36 @@ const NavBar = () => {
             ))}
           </ul>
         </div>
-        <a href="/" className="btn btn-ghost text-xl">
-          Edu Core
+        <a className="hidden lg:flex cursor-pointer">
+          <div className="flex items-center gap-2">
+            <Logo primaryColor={primaryColor ?? "#000000"} />{" "}
+            <span className="lg:text-2xl text-lg font-extrabold">
+              {institution?.name || "EDU CORE COLLEGE"}
+            </span>
+          </div>
         </a>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul tabIndex={-1} className="menu menu-horizontal px-1">
+        <ul
+          tabIndex={-1}
+          className="menu menu-horizontal px-1 [&_li>a]:rounded-none [&_li>a]:bg-transparent [&_li>a]:hover:bg-transparent shadow-none"
+        >
           {publicMenuItems.map((menu) => (
             <li key={menu.id}>
               <NavLink
                 to={menu.path}
                 end={menu.path === "/"}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2 rounded transition ${
-                    isActive
-                      ? "bg-slate-200 text-slate-900"
-                      : "hover:bg-slate-300 hover:text-slate-900"
-                  }`
+                  `relative flex items-center gap-3 px-4 py-2 rounded-none
+  bg-transparent! shadow-none!
+  after:absolute after:left-4 after:right-4 after:bottom-0
+  after:h-0.5 after:bg-primary
+  after:transition-transform after:duration-300
+  ${
+    isActive
+      ? "text-primary after:scale-x-100"
+      : "text-base-content after:scale-x-0 hover:text-primary hover:after:scale-x-100"
+  }`
                 }
               >
                 {menu.name}

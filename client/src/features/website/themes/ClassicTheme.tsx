@@ -1,18 +1,17 @@
+import Logo from "../../../components/ui/Logo";
+import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
-import {
-  ArrowRight,
-  BookOpen,
-  GraduationCap,
-  MapPin,
-  Phone,
-} from "lucide-react";
+import { ArrowRight, BookOpen, MapPin } from "lucide-react";
+import NoticesSection from "../components/NoticesSection";
 interface ClassicThemeProps {
   settings: PublicInstitutionSettings;
+  notices: Notice[];
 }
 
-const ClassicTheme = ({ settings }: ClassicThemeProps) => {
+const ClassicTheme = ({ settings, notices }: ClassicThemeProps) => {
   const { institution, branding, contact, features } = settings;
   const primary = branding?.primaryColor || "#17365d";
+
   return (
     <main className="min-h-screen bg-[#f8f6f0] text-slate-800">
       <div className="bg-[#142b49] px-5 py-2 text-sm text-white">
@@ -27,7 +26,8 @@ const ClassicTheme = ({ settings }: ClassicThemeProps) => {
       <header className="border-b-4 border-[#c49a45] bg-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 py-5">
           <div className="flex items-center gap-4">
-            {branding?.logo ? (
+            <Logo primaryColor={primary} />
+            {/* {branding?.logo ? (
               <img
                 src={branding.logo}
                 alt="Institution logo"
@@ -35,7 +35,7 @@ const ClassicTheme = ({ settings }: ClassicThemeProps) => {
               />
             ) : (
               <GraduationCap size={48} style={{ color: primary }} />
-            )}
+            )} */}
             <div>
               <h1
                 className="font-serif text-2xl font-bold md:text-3xl"
@@ -172,11 +172,23 @@ const ClassicTheme = ({ settings }: ClassicThemeProps) => {
             <p className="mt-3 text-slate-600">
               Important institutional announcements will appear here.
             </p>
+
+            <div className="">
+              <NoticesSection notices={notices} />
+              {/* {notices.map((n) => (
+                <div key={n._id} className="">
+                  <h1 className="lg:text-2xl text-xl font-semibold">
+                    {n.title}
+                  </h1>
+                  <p>{n.content}</p>
+                </div>
+              ))} */}
+            </div>
           </div>
         </section>
       )}
 
-      <footer id="contact" className="bg-[#142b49] px-5 py-8 text-white">
+      {/* <footer id="contact" className="bg-[#142b49] px-5 py-8 text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-5">
           <div>
             <h3 className="font-serif text-xl font-bold">{institution.name}</h3>
@@ -191,7 +203,7 @@ const ClassicTheme = ({ settings }: ClassicThemeProps) => {
             <p>{contact?.email || institution.email}</p>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </main>
   );
 };

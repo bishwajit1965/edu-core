@@ -56,7 +56,8 @@ export interface ISystemSettings {
   language: string;
 }
 export interface IWebsiteSettings {
-  theme: "classic" | "modern" | "academic" | "vibrant" | "premium";
+  theme: string;
+  // theme: "classic" | "modern" | "academic" | "vibrant" | "premium";
 }
 
 export interface IPublicInstitutionSettings {

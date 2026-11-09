@@ -1,11 +1,14 @@
+import Logo from "../../../components/ui/Logo";
+import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, Heart, Sparkles, Users } from "lucide-react";
 
 interface VibrantThemeProps {
   settings: PublicInstitutionSettings;
+  notices: Notice[];
 }
 const VibrantTheme = ({ settings }: VibrantThemeProps) => {
-  const { institution, branding, contact, features } = settings;
+  const { institution, branding, features } = settings;
   const primary = branding?.primaryColor || "#7c3aed";
 
   return (
@@ -13,7 +16,7 @@ const VibrantTheme = ({ settings }: VibrantThemeProps) => {
       <header className="relative z-10 bg-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 py-5">
           <div className="flex items-center gap-3">
-            {branding?.logo ? (
+            {/* {branding?.logo ? (
               <img
                 src={branding.logo}
                 alt="Institution logo"
@@ -26,7 +29,8 @@ const VibrantTheme = ({ settings }: VibrantThemeProps) => {
               >
                 <Sparkles size={28} />
               </div>
-            )}
+            )} */}
+            <Logo primaryColor={primary} />
             <div>
               <h1
                 className="text-xl font-extrabold md:text-2xl"
@@ -202,7 +206,7 @@ const VibrantTheme = ({ settings }: VibrantThemeProps) => {
         </section>
       )}
 
-      <footer id="contact" className="bg-slate-950 px-5 py-9 text-white">
+      {/* <footer id="contact" className="bg-slate-950 px-5 py-9 text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-5">
           <div>
             <h3 className="text-xl font-extrabold">{institution.name}</h3>
@@ -215,7 +219,7 @@ const VibrantTheme = ({ settings }: VibrantThemeProps) => {
             <p>{contact?.email || institution.email}</p>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </main>
   );
 };

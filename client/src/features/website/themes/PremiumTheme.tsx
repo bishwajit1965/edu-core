@@ -1,24 +1,21 @@
+import Logo from "../../../components/ui/Logo";
+import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
-import {
-  ArrowRight,
-  BookOpen,
-  GraduationCap,
-  Menu,
-  MoveUpRight,
-} from "lucide-react";
+import { ArrowRight, BookOpen, MoveUpRight } from "lucide-react";
 interface PremiumThemeProps {
   settings: PublicInstitutionSettings;
+  notices: Notice[];
 }
 
 const PremiumTheme = ({ settings }: PremiumThemeProps) => {
-  const { institution, branding, contact, features } = settings;
+  const { institution, branding, features } = settings;
   const primary = branding?.primaryColor || "#172b3a";
   return (
     <main className="min-h-screen bg-[#faf9f6] text-[#202a30]">
       <header className="bg-[#111f29] text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 py-6">
           <div className="flex items-center gap-4">
-            {branding?.logo ? (
+            {/* {branding?.logo ? (
               <img
                 src={branding.logo}
                 alt="Institution logo"
@@ -26,7 +23,9 @@ const PremiumTheme = ({ settings }: PremiumThemeProps) => {
               />
             ) : (
               <GraduationCap size={44} className="text-[#c9ad72]" />
-            )}
+            )} */}
+
+            <Logo primaryColor={primary} />
             <div>
               <h1 className="font-serif text-xl font-semibold tracking-wide md:text-2xl">
                 {institution.name}
@@ -199,7 +198,7 @@ const PremiumTheme = ({ settings }: PremiumThemeProps) => {
         </section>
       )}
 
-      <footer id="contact" className="bg-[#111f29] px-5 py-12 text-white">
+      {/* <footer id="contact" className="bg-[#111f29] px-5 py-12 text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-8">
           <div>
             <h3 className="font-serif text-2xl">{institution.name}</h3>
@@ -225,7 +224,7 @@ const PremiumTheme = ({ settings }: PremiumThemeProps) => {
         <div className="mx-auto mt-10 max-w-7xl border-t border-white/10 pt-5 text-xs text-slate-400">
           © {new Date().getFullYear()} {institution.name}. All rights reserved.
         </div>
-      </footer>
+      </footer> */}
     </main>
   );
 };

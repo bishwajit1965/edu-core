@@ -13,6 +13,9 @@ import {
 
 const router = Router();
 
+// Publicly visible notices fetched
+router.get("/public", NoticeController.getAllPublicNotices);
+
 // Notice management: Principal (ADMIN) only.
 router.use(authMiddleware, authorize(USER_ROLE.ADMIN));
 

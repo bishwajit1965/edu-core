@@ -20,6 +20,9 @@ import VerifyOtp from "../pages/auth/VerifyOtp";
 import Profile from "../pages/public/Profile";
 import StudentsPage from "../pages/admin/StudentsPage";
 import NoticeManagement from "../pages/admin/notice/NoticeManagement";
+import Notices from "../pages/public/Notices";
+import ThemeManagement from "../pages/admin/theme/ThemeManagement";
+import NoticeDetails from "../pages/public/NoticeDetails";
 
 export const router = createBrowserRouter([
   // Main layout
@@ -38,6 +41,17 @@ export const router = createBrowserRouter([
       {
         path: "/contact",
         element: <Contact />,
+      },
+      {
+        path: "/notices",
+        element: <Notices />,
+      },
+      {
+        path: "/notices/:noticeId",
+        element: <NoticeDetails />,
+        loader: async ({ params }) => {
+          return fetch(`/api/v1/notices/${params.noticeId}`);
+        },
       },
       {
         path: "/profile",
@@ -115,6 +129,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/dashboard/notice-management",
         element: <NoticeManagement />,
+      },
+      {
+        path: "/admin/dashboard/theme-management",
+        element: <ThemeManagement />,
       },
     ],
   },

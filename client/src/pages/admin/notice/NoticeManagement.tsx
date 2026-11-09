@@ -73,6 +73,13 @@ const NoticeManagement = () => {
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawError, setWithdrawError] = useState<string | null>(null);
 
+  // // Notice attachments states
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [existingAttachments, setExistingAttachments] = useState<
+    Notice["attachments"]
+  >([]);
+
   console.log("Editing notice option", isEditModalOpen.toString());
   console.log("Editing Id", editNoticeId);
   console.log("Editing notice", editingNotice);
@@ -134,6 +141,8 @@ const NoticeManagement = () => {
         ? new Date(editingNotice.expiresAt).toISOString().slice(0, 16)
         : "",
     );
+    setSelectedFiles([]);
+    setExistingAttachments(editingNotice?.attachments || []);
     setSubmitError(null);
   };
 
@@ -148,6 +157,9 @@ const NoticeManagement = () => {
     setSection("");
     setExpiresAt("");
     setSubmitError(null);
+    setSelectedFiles([]);
+    setIsDragging(false);
+    setExistingAttachments([]);
   };
 
   const closeCreateModal = () => {
@@ -192,7 +204,7 @@ const NoticeManagement = () => {
         }),
       };
 
-      const createdNotice = await createNotice(payload);
+      const createdNotice = await createNotice(payload, selectedFiles);
 
       if (createdNotice) {
         showSuccess("Notice created successfully!");
@@ -214,6 +226,7 @@ const NoticeManagement = () => {
 
   /**---> EDIT NOTICE HANDLER --->*/
   const handleEditNotice = async (editingNotice: Notice | null) => {
+    setSubmitting(true);
     try {
       const payload: UpdateNoticePayload = {
         title: title.trim(),
@@ -231,7 +244,11 @@ const NoticeManagement = () => {
             : undefined,
         expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
       };
-      const response = await updateNotice(editingNotice?._id || "", payload);
+      const response = await updateNotice(
+        editingNotice?._id || "",
+        payload,
+        selectedFiles,
+      );
       if (response) {
         showSuccess("Notice updated successfully!");
         const updatedNotices = notices.map((notice) =>
@@ -410,6 +427,57 @@ const NoticeManagement = () => {
         err instanceof Error ? err.message : "Failed to delete notice.",
       );
     }
+  };
+
+  /**===============================================
+   * FILES / MEDIA DEALING HANDLERS
+   *
+   * @param files
+   **===============================================*/
+
+  // Handle Incoming / newly added files
+  const handleFiles = (files: FileList | File[]) => {
+    const incomingFiles = Array.from(files);
+
+    setSelectedFiles((previousFiles) => {
+      const newFiles = incomingFiles.filter(
+        (newFile) =>
+          !previousFiles.some(
+            (existingFile) =>
+              existingFile.name === newFile.name &&
+              existingFile.size === newFile.size &&
+              existingFile.lastModified === newFile.lastModified,
+          ),
+      );
+
+      return [...previousFiles, ...newFiles];
+    });
+  };
+
+  // File removal handler
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles((previousFiles) =>
+      previousFiles.filter((_, fileIndex) => fileIndex !== index),
+    );
+  };
+
+  // File input handler
+  const handleFileInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (event.target.files) {
+      handleFiles(event.target.files);
+    }
+
+    event.target.value = "";
+  };
+
+  const handleRemoveExistingAttachment = (publicId: string) => {
+    setExistingAttachments((previousAttachments) =>
+      previousAttachments.filter(
+        (attachment) => attachment.publicId !== publicId,
+      ),
+    );
   };
 
   const categoryOptions = [
@@ -722,7 +790,7 @@ const NoticeManagement = () => {
         title={`${editingNotice ? "Edit Notice" : "Create Notice"}`}
         className="max-w-2xl"
       >
-        <form onSubmit={handleCreateNotice} className="space-y-4">
+        <form onSubmit={handleCreateNotice} className="space-y-2">
           <Input
             label="Notice Title"
             name="title"
@@ -818,6 +886,143 @@ const NoticeManagement = () => {
             </p>
           )}
 
+          {/* Display Existing attachments */}
+          {existingAttachments.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-700">
+                Existing Attachments
+              </p>
+
+              {existingAttachments.map((attachment) => (
+                <div
+                  key={attachment.publicId}
+                  className="flex items-center justify-between gap-3 rounded-md border border-gray-300 p-2"
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    {attachment.resourceType === "image" ? (
+                      <img
+                        src={attachment.url}
+                        alt="Notice attachment"
+                        className="h-12 w-12 rounded object-cover lg:hover:scale-150"
+                      />
+                    ) : (
+                      <FileText className="h-8 w-8 text-gray-500" />
+                    )}
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">
+                        {attachment.publicId.split("/").pop()}
+                      </p>
+
+                      <a
+                        href={attachment.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-600 hover:underline"
+                      >
+                        View attachment
+                      </a>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleRemoveExistingAttachment(attachment.publicId)
+                    }
+                    className="text-sm font-medium flex items-center gap-1 text-red-600 hover:text-base-100 border border-red-200 py-0.5 px-1 rounded-md shadow hover:bg-red-600"
+                  >
+                    <LucideIcon.XCircle size={14} /> Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ---> NOTICE ATTACHMENTS File / Media Handling Input---> */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium">Attachments</label>
+
+            <div
+              onDragOver={(event) => {
+                event.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={(event) => {
+                event.preventDefault();
+                setIsDragging(false);
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                setIsDragging(false);
+                handleFiles(event.dataTransfer.files);
+              }}
+              onClick={() => document.getElementById("notice-files")?.click()}
+              className={`cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition ${
+                isDragging
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-300 hover:border-blue-400"
+              }`}
+            >
+              <input
+                id="notice-files"
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleFileInputChange}
+              />
+
+              <p className="font-medium text-gray-700">
+                Drag and drop files here
+              </p>
+
+              <p className="mt-1 text-sm text-gray-500">
+                or click to browse files
+              </p>
+            </div>
+
+            {selectedFiles.length > 0 && (
+              <div className="space-y-2">
+                {selectedFiles.map((file, index) => (
+                  <div
+                    key={`${file.name}-${file.lastModified}-${index}`}
+                    className="flex items-center justify-between gap-3 rounded-md border border-gray-300 p-3"
+                  >
+                    <div className="min-w-0 flex items-center gap-2">
+                      {file.type.startsWith("image/") ? (
+                        <img
+                          src={
+                            file ? URL.createObjectURL(file) : file || "Avatar"
+                          }
+                          alt="Student preview"
+                          className="h-12 w-12 rounded-lg border border-gray-300 object-cover lg:hover:scale-150"
+                        />
+                      ) : (
+                        <FileText className="h-8 w-8 text-gray-500" />
+                      )}
+
+                      <p className="truncate text-sm font-medium">
+                        {file.name}
+                      </p>
+
+                      <p className="text-xs text-gray-500">
+                        {(file.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="text-sm font-medium flex items-center gap-1 text-red-600 hover:text-base-100 border border-red-200 py-0.5 px-1 rounded-md shadow hover:bg-red-600"
+                    >
+                      <LucideIcon.XCircle size={14} /> Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="flex justify-end gap-2 border-t border-base-content/15 pt-4">
             <Button
               type="button"
@@ -829,6 +1034,7 @@ const NoticeManagement = () => {
             >
               Cancel
             </Button>
+
             {!editNoticeId && (
               <Button
                 type="submit"
@@ -841,14 +1047,15 @@ const NoticeManagement = () => {
               </Button>
             )}
 
-            {!isCreateModalOpen && (
+            {editNoticeId && (
               <Button
-                type="button"
+                type="submit"
                 size="xs"
                 variant="primary"
                 onClick={() => handleEditNotice(editingNotice)}
                 disabled={submitting}
                 icon={LucideIcon.Edit}
+                loading={submitting}
               >
                 Edit Notice
               </Button>
