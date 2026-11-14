@@ -145,8 +145,9 @@ const ThemeManagement = () => {
         variant="success"
         icon={LucideIcon.Eye}
         onClick={() => handleViewTheme(theme._id)}
+        title="View Theme"
       >
-        View
+        <span className="sr-only">View</span>
       </Button>
 
       <Button
@@ -154,8 +155,9 @@ const ThemeManagement = () => {
         variant="primary"
         icon={LucideIcon.Edit}
         onClick={() => handleSelectEditingTheme(theme._id)}
+        title="Edit Theme"
       >
-        Edit
+        <span className="sr-only">Edit</span>
       </Button>
 
       <Button
@@ -163,8 +165,9 @@ const ThemeManagement = () => {
         variant="danger"
         icon={LucideIcon.Trash2}
         onClick={() => handleDeleteTheme(theme._id)}
+        title="Delete Theme"
       >
-        Delete
+        <span className="sr-only">Delete Theme</span>
       </Button>
     </>
   );

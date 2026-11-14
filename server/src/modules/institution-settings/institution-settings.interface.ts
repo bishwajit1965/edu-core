@@ -1,5 +1,23 @@
 import { Model } from "mongoose";
 
+export type LeadershipRole = "GB_CHAIRMAN" | "PRINCIPAL" | "VICE_PRINCIPAL";
+export interface ILeadershipMessage {
+  role: LeadershipRole;
+  name: string;
+  qualification: string;
+  designation: string;
+  photo: string;
+  message: string;
+  isActive: boolean;
+  displayOrder: number;
+}
+
+export interface ILeadershipMessages {
+  enabled: boolean;
+  title: string;
+  subtitle: string;
+  leaders: ILeadershipMessage[];
+}
 export interface IInstitution {
   name: string;
   institutionType: string;
@@ -57,7 +75,6 @@ export interface ISystemSettings {
 }
 export interface IWebsiteSettings {
   theme: string;
-  // theme: "classic" | "modern" | "academic" | "vibrant" | "premium";
 }
 
 export interface IPublicInstitutionSettings {
@@ -73,6 +90,7 @@ export interface IPublicInstitutionSettings {
   >;
   branding: IBranding;
   contact: IContact;
+  leadershipMessages: ILeadershipMessages;
   social: ISocial;
   seo: ISEO;
   features: Pick<
@@ -86,6 +104,7 @@ export interface IInstitutionSettings {
   institution: IInstitution;
   branding: IBranding;
   contact: IContact;
+  leadershipMessages: ILeadershipMessages;
   social: ISocial;
   seo: ISEO;
   features: IFeatures;

@@ -44,6 +44,7 @@ const clearanceSchema = z.object({
 const studentBaseSchema = z.object({
   name: z.string().trim().min(1).max(200),
   dateOfBirth: z.coerce.date().optional(),
+  studentEmail: z.string().trim().optional(),
   gender: z.string().trim().optional(),
   photo: mediaReferenceSchema.optional(),
   fatherName: z.string().trim().optional(),

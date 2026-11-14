@@ -1,8 +1,7 @@
 import PublicPageHeader from "../../components/public/PublicPageHeader";
-import Button from "../../components/ui/Button";
 import PublicPageContainer from "../../components/public/PublicPageContainer";
 import { LucideIcon } from "../../components/ui/LucideIcons";
-import { getAllNotices } from "../../features/notice/noticeApi";
+import { getPublicNotices, type Notice } from "../../features/notice/noticeApi";
 import { PUBLIC_API_KEYS } from "../../hooks/publicDataFetcherHooks/queryKeyConstants";
 import { usePublicApiQuery } from "../../hooks/publicDataFetcherHooks/usePublicApiQuery";
 import QueryStateHandler from "../../components/ui/QueryStateHandler";
@@ -16,12 +15,12 @@ import { useState } from "react";
 const Notices = () => {
   const { data, isLoading, isPending, isError, error } = usePublicApiQuery({
     key: [...PUBLIC_API_KEYS.NOTICE],
-    queryFn: getAllNotices,
+    queryFn: getPublicNotices,
   });
   console.log("Notices in Notices Page", data);
 
   /**---> PAGINATION --->*/
-  const [paginatedData, setPaginatedData] = useState(data || []);
+  const [paginatedData, setPaginatedData] = useState<Notice[]>([]);
   const dataLength = paginatedData?.length;
   return (
     <>
@@ -32,11 +31,7 @@ const Notices = () => {
           description="Stay updated with the latest announcements, academic information and institutional activities."
           breadcrumbs={[{ label: "HOME", href: "/" }, { label: "NOTICES" }]}
           counter={data?.length ? data?.length : 0}
-          actions={
-            <div>
-              <Button>View</Button>
-            </div>
-          }
+          actions={<div></div>}
         />
 
         {/* Notice listing will go here */}
@@ -60,37 +55,43 @@ const Notices = () => {
                     key={notice._id}
                   >
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Badge color="blue">{notice.category ?? ""}</Badge>
-                        <span>{normalizeDate(notice?.publishedAt ?? "")}</span>
+                      Id: {notice?._id}
+                      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+                        <Badge color="blue">{notice?.category ?? ""}</Badge>
+                        <span className="text-xs text-gray-500">
+                          Published on:{" "}
+                          {normalizeDate(notice?.publishedAt ?? "")}
+                        </span>
                       </div>
                       <div className="space-y-2">
-                        <h1 className="lg:text-xl font-bold">
+                        <h2 className="lg:text-xl font-bold">
                           {notice?.title ?? ""}
-                        </h1>
-                        <p>{notice?.content ?? ""}</p>
+                        </h2>
+                        <p className="text-sm leading-7 text-gray-600 whitespace-pre-line">
+                          {notice?.content ?? ""}
+                        </p>
                       </div>
                     </div>
+
                     <div className="divider"></div>
+
                     <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 text-xs">
                         <span>
-                          {notice?.attachments?.length > 0 ? (
+                          {notice?.attachments?.length && (
                             <LucideIcon.Paperclip size={16} />
-                          ) : (
-                            ""
                           )}
                         </span>
-
                         <span>
                           {notice?.attachments
                             ? notice.attachments.length > 0
-                              ? notice.attachments.length + " Files Attached"
+                              ? notice.attachments.length +
+                                `${notice.attachments.length === 1 ? " File " : " Files "} Attached`
                               : "No attachments"
                             : "No attachments"}
                         </span>
                       </div>
-                      <div className="bg-base-200">
+                      <div className="">
                         <Link
                           to={`/notices/${notice._id}`}
                           className="p-0 flex items-center gap-1 text-blue-500 hover:text-blue-800"

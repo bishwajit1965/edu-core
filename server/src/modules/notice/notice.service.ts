@@ -100,7 +100,6 @@ const getAllPublishedNoticesService = async () => {
     withdrawnAt: null,
     $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
   }).sort({ publishedAt: -1 });
-
   return notices;
 };
 
@@ -354,6 +353,102 @@ const withdrawNoticeService = async (
   return notice;
 };
 
+const getPublicNoticeAttachmentsForDownloadService = async (id: string) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid notice ID.");
+  }
+
+  const notice = await Notice.findOne({
+    _id: id,
+    status: NOTICE_STATUS.PUBLISHED,
+    isDeleted: false,
+    withdrawnAt: null,
+    $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
+  }).select("attachments");
+
+  if (!notice) {
+    throw new AppError(404, "Public notice not found.");
+  }
+
+  if (!notice.attachments.length) {
+    throw new AppError(404, "This notice has no attachments.");
+  }
+
+  const mediaConfig = getMediaModuleConfig("notices");
+
+  if (!mediaConfig) {
+    throw new AppError(500, "Notice media configuration not found.");
+  }
+
+  const usedFilenames = new Set<string>();
+
+  const files: { filename: string; buffer: Buffer }[] = [];
+
+  for (const attachment of notice.attachments) {
+    const url = new URL(attachment.url);
+
+    // Only download assets from our Cloudinary delivery domain.
+    if (url.protocol !== "https:" || url.hostname !== "res.cloudinary.com") {
+      throw new AppError(400, "Invalid attachment URL.");
+    }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new AppError(502, "Unable to retrieve a notice attachment.");
+    }
+
+    const contentLength = Number(response.headers.get("content-length"));
+
+    if (
+      Number.isFinite(contentLength) &&
+      contentLength > mediaConfig.maxFileSizeBytes
+    ) {
+      throw new AppError(413, "Attachment exceeds the allowed size.");
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+
+    if (buffer.length > mediaConfig.maxFileSizeBytes) {
+      throw new AppError(413, "Attachment exceeds the allowed size.");
+    }
+
+    const publicIdFilename =
+      attachment.publicId.split("/").pop() || "attachment";
+
+    const filename = /\.[a-z0-9]{1,10}$/i.test(publicIdFilename)
+      ? publicIdFilename
+      : attachment.format
+        ? `${publicIdFilename}.${attachment.format}`
+        : publicIdFilename;
+
+    // Prevent duplicate filenames inside the ZIP.
+    const lastDot = filename.lastIndexOf(".");
+    const hasExtension = lastDot > 0;
+
+    const baseName = hasExtension ? filename.slice(0, lastDot) : filename;
+
+    const extension = hasExtension ? filename.slice(lastDot) : "";
+
+    let uniqueFilename = filename;
+    let counter = 2;
+
+    while (usedFilenames.has(uniqueFilename.toLowerCase())) {
+      uniqueFilename = `${baseName}-${counter}${extension}`;
+      counter++;
+    }
+
+    usedFilenames.add(uniqueFilename.toLowerCase());
+
+    files.push({
+      filename: uniqueFilename,
+      buffer,
+    });
+  }
+
+  return files;
+};
+
 const deleteNoticeService = async (id: string, deletedBy: string) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid notice ID.");
@@ -386,5 +481,6 @@ export const NoticeService = {
   publishNoticeService,
   archiveNoticeService,
   withdrawNoticeService,
+  getPublicNoticeAttachmentsForDownloadService,
   deleteNoticeService,
 };

@@ -87,6 +87,7 @@ const StudentsPage = () => {
     name: "",
     dateOfBirth: "",
     gender: "",
+    studentEmail: "",
     fatherName: "",
     motherName: "",
     guardianName: "",
@@ -119,6 +120,7 @@ const StudentsPage = () => {
       name: "",
       dateOfBirth: "",
       gender: "",
+      studentEmail: "",
       fatherName: "",
       motherName: "",
       guardianName: "",
@@ -214,6 +216,7 @@ const StudentsPage = () => {
         name: form.name.trim(),
         ...(form.dateOfBirth && { dateOfBirth: form.dateOfBirth }),
         ...(form.gender && { gender: form.gender }),
+        ...(form.studentEmail && { studentEmail: form.studentEmail }),
         ...(form.fatherName.trim() && { fatherName: form.fatherName.trim() }),
         ...(form.motherName.trim() && { motherName: form.motherName.trim() }),
         ...(form.fatherOccupation === "Other"
@@ -431,6 +434,7 @@ const StudentsPage = () => {
       dateOfBirth: student.dateOfBirth
         ? new Date(student.dateOfBirth).toISOString().slice(0, 10)
         : "",
+      studentEmail: student.studentEmail ?? "",
       gender: student.gender ?? "",
       fatherName: student.fatherName ?? "",
       motherName: student.motherName ?? "",
@@ -721,6 +725,16 @@ const StudentsPage = () => {
                 type="date"
                 value={form.dateOfBirth}
                 onChange={handleFormChange}
+              />
+
+              <Input
+                id="studentEmail"
+                label="Student's Email"
+                type="email"
+                value={form.studentEmail}
+                name="studentEmail"
+                onChange={handleFormChange}
+                placeholder="Enter student's email address"
               />
 
               <Select

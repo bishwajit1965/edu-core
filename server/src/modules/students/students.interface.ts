@@ -52,6 +52,7 @@ export interface IStudent {
   dateOfBirth?: Date;
   gender?: string;
   photo?: MediaReference;
+  studentEmail: string;
 
   fatherName?: string;
   motherName?: string;

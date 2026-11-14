@@ -2,9 +2,11 @@ import Logo from "../../../components/ui/Logo";
 import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, Users, Award } from "lucide-react";
+import type { Theme } from "../../theme/themeApi";
 
 interface AcademicThemeProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
   notices: Notice[];
 }
 
@@ -26,9 +28,10 @@ const highlights = [
   },
 ];
 
-const AcademicTheme = ({ settings }: AcademicThemeProps) => {
+const AcademicTheme = ({ themes, settings }: AcademicThemeProps) => {
   const { institution, branding, features } = settings;
   const primary = branding?.primaryColor || "#155e75";
+  console.log("THEME IN ACADEMIC THEME", themes);
 
   return (
     <main className="min-h-screen bg-white text-slate-800">

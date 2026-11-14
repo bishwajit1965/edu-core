@@ -164,6 +164,9 @@ import {
   XCircle,
   ArrowUpDown,
   Paperclip,
+  GraduationCap,
+  Newspaper,
+  NewspaperIcon,
 } from "lucide-react";
 
 // Central registry
@@ -179,7 +182,6 @@ export const LucideIcon = {
   ArrowBigLeft,
   ArrowBigRightDash,
   ArrowUpDown,
-
   BanknoteArrowDown,
   BanknoteArrowUp,
   Calendar,
@@ -227,6 +229,7 @@ export const LucideIcon = {
   FilePenLine,
   FileText,
   FolderOpen,
+  GraduationCap,
   Loader,
   Laugh,
   LaughIcon,
@@ -276,6 +279,8 @@ export const LucideIcon = {
   MegaphoneOffIcon,
   MessageSquare,
   MessageCircleCodeIcon,
+  Newspaper,
+  NewspaperIcon,
   Package,
   PieChart,
   Plus,

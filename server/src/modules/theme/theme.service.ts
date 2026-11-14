@@ -176,7 +176,7 @@ const getActiveThemesService = async () => {
   return Theme.find({
     isActive: true,
     isDeleted: false,
-  }).select("name slug description preview");
+  }).select("name slug description preview config");
 };
 
 // GET THEME BY ID

@@ -22,7 +22,7 @@ const getPublicInstitutionSettingsService =
   async (): Promise<IPublicInstitutionSettings> => {
     const settings = await InstitutionSettings.findOne()
       .select(
-        "institution.name institution.institutionType institution.address institution.phone institution.email institution.website institution.establishedYear branding contact social seo features.admissions features.notices features.events features.literaryCorner website.theme",
+        "institution.name institution.institutionType institution.address institution.phone institution.email institution.website institution.establishedYear branding contact social seo features.admissions features.notices features.events features.literaryCorner website.theme leadershipMessages",
       )
       .lean();
 
@@ -68,6 +68,7 @@ const updateInstitutionSettingsService = async (
     "features",
     "system",
     "website",
+    "leadershipMessages",
   ] as const;
 
   for (const section of allowedSection) {

@@ -36,7 +36,7 @@ const QueryStateHandler = ({
     );
   }
   if (isPending) {
-    return <div>{loadingMessage}</div>;
+    return <div className="flex justify-center">{loadingMessage}</div>;
   }
 
   if (isError) {

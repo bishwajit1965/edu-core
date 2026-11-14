@@ -10,6 +10,10 @@ import {
   type Notice,
 } from "../../features/notice/noticeApi.js";
 
+import { usePublicApiQuery } from "../../hooks/publicDataFetcherHooks/usePublicApiQuery.js";
+import { PUBLIC_API_KEYS } from "../../hooks/publicDataFetcherHooks/queryKeyConstants.js";
+import { getActiveThemes } from "../../features/theme/themeApi.js";
+
 const Home = () => {
   const [settings, setSettings] = useState<PublicInstitutionSettings | null>(
     null,
@@ -54,6 +58,11 @@ const Home = () => {
     loadNotices();
   }, []);
 
+  const { data: themes } = usePublicApiQuery({
+    key: [...PUBLIC_API_KEYS.THEME],
+    queryFn: getActiveThemes,
+  });
+
   console.log("Settings in home page", settings);
 
   if (loading) {
@@ -70,7 +79,11 @@ const Home = () => {
 
   return (
     <div className="">
-      <ThemeResolver settings={settings} notices={notices} />
+      <ThemeResolver
+        settings={settings}
+        themes={themes ?? []}
+        notices={notices}
+      />
     </div>
   );
 };

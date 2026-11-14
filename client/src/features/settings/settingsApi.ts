@@ -1,5 +1,31 @@
 import axiosInstance from "../../lib/axios.js";
 
+export type InstitutionThemeSlug =
+  | "classic-traditional"
+  | "academic-editorial"
+  | "premium-minimal"
+  | "modern-professional"
+  | "vibrant-friendly";
+
+export type LeadershipRole = "GB_CHAIRMAN" | "PRINCIPAL" | "VICE_PRINCIPAL";
+
+export interface ILeadershipMessage {
+  role: LeadershipRole;
+  name: string;
+  qualification: string;
+  designation: string;
+  photo: string;
+  message: string;
+  isActive: boolean;
+  displayOrder: number;
+}
+
+export interface ILeadershipMessages {
+  enabled: boolean;
+  title: string;
+  subtitle: string;
+  leaders: ILeadershipMessage[];
+}
 export interface PublicInstitutionSettings {
   institution: {
     name: string;
@@ -39,8 +65,9 @@ export interface PublicInstitutionSettings {
     literaryCorner: boolean;
   };
   website: {
-    theme: "classic" | "modern" | "academic" | "vibrant" | "premium";
+    theme: InstitutionThemeSlug;
   };
+  leadershipMessages?: ILeadershipMessages;
 }
 
 export interface InstitutionSettings {
@@ -94,8 +121,9 @@ export interface InstitutionSettings {
     language: string;
   };
   website: {
-    theme: "classic" | "modern" | "academic" | "vibrant" | "premium";
+    theme: InstitutionThemeSlug;
   };
+  leadershipMessages: ILeadershipMessages;
   _id?: string;
   createdAt?: string;
   updatedAt?: string;

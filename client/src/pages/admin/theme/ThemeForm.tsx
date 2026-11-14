@@ -164,9 +164,9 @@ const defaultThemeConfig: ThemeConfigInput = {
   },
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------
 // Image dropzone
-// -----------------------------------------------------------------------------
+// ------------------------------------
 
 interface ImageDropzoneProps {
   label: string;
@@ -303,9 +303,9 @@ const ImageDropzone = ({
   );
 };
 
-// -----------------------------------------------------------------------------
+// ------------------------------------
 // Theme form
-// -----------------------------------------------------------------------------
+// ------------------------------------
 
 const ThemeForm = ({ onCancel, theme }: ThemeFormProps) => {
   const themeApiMutation = useApiMutation({
@@ -319,7 +319,9 @@ const ThemeForm = ({ onCancel, theme }: ThemeFormProps) => {
   const [isActive, setIsActive] = useState(theme?.isActive ?? true);
 
   const [previewFile, setPreviewFile] = useState<File | null>(null);
-  const [config, setConfig] = useState<ThemeConfigInput>(defaultThemeConfig);
+  const [config, setConfig] = useState<ThemeConfigInput>(
+    theme?.config ?? defaultThemeConfig,
+  );
   const [slides, setSlides] = useState<SlideDraft[]>(
     theme?.config.layout.slider.slides?.map((slide) => ({
       title: slide.title,
@@ -338,9 +340,9 @@ const ThemeForm = ({ onCancel, theme }: ThemeFormProps) => {
   );
   const [validationError, setValidationError] = useState("");
 
-  // ---------------------------------------------------------------------------
+  // ----------------------------------
   // Updates
-  // ---------------------------------------------------------------------------
+  // ----------------------------------
 
   const updateColor = (
     key: keyof ThemeConfigInput["colors"],
@@ -412,9 +414,9 @@ const ThemeForm = ({ onCancel, theme }: ThemeFormProps) => {
     );
   };
 
-  // ---------------------------------------------------------------------------
+  // ----------------------------------
   // Submit
-  // ---------------------------------------------------------------------------
+  // ----------------------------------
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     console.log("handleSubmit fired");
@@ -499,9 +501,9 @@ const ThemeForm = ({ onCancel, theme }: ThemeFormProps) => {
 
   const mutationError = themeApiMutation.error;
 
-  // ---------------------------------------------------------------------------
+  // ----------------------------------
   // Render
-  // ---------------------------------------------------------------------------
+  // ----------------------------------
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -512,7 +514,7 @@ const ThemeForm = ({ onCancel, theme }: ThemeFormProps) => {
           <div className="grid gap-4 md:grid-cols-2">
             <Input
               label="Theme Name"
-              name="themeName"
+              name="name"
               value={name}
               onChange={(event) => handleNameChange(event.target.value)}
               placeholder="Modern & Professional"
@@ -521,7 +523,7 @@ const ThemeForm = ({ onCancel, theme }: ThemeFormProps) => {
 
             <Input
               label="Theme Slug"
-              name="themeSlug"
+              name="slug"
               value={slug}
               onChange={(event) => setSlug(event.target.value)}
               placeholder="modern-professional"

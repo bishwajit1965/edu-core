@@ -2,14 +2,18 @@ import Logo from "../../../components/ui/Logo";
 import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, Heart, Sparkles, Users } from "lucide-react";
+import type { Theme } from "../../theme/themeApi";
 
 interface VibrantThemeProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
   notices: Notice[];
 }
-const VibrantTheme = ({ settings }: VibrantThemeProps) => {
+const VibrantTheme = ({ themes, settings }: VibrantThemeProps) => {
   const { institution, branding, features } = settings;
   const primary = branding?.primaryColor || "#7c3aed";
+
+  console.log("THEME IN VIBRANT THEME", themes);
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#fffdf8] text-slate-800">

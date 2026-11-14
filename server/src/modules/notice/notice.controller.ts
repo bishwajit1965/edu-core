@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { NoticeService } from "./notice.service.js";
+import { ZipArchive } from "archiver";
 
 const createNotice = catchAsync(async (req: Request, res: Response) => {
   const result = await NoticeService.createNoticeService(
@@ -96,20 +97,6 @@ const archiveNotice = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const deleteNotice = catchAsync(async (req: Request, res: Response) => {
-  const result = await NoticeService.deleteNoticeService(
-    req.params.id as string,
-    typeof req.user === "object" ? req.user?.userId : undefined,
-  );
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Notice deleted successfully.",
-    data: result,
-  });
-});
-
 const withdrawNotice = catchAsync(async (req: Request, res: Response) => {
   const { withdrawalReason } = req.body;
 
@@ -127,6 +114,56 @@ const withdrawNotice = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const downloadAllAttachments = catchAsync(
+  async (req: Request, res: Response) => {
+    const files =
+      await NoticeService.getPublicNoticeAttachmentsForDownloadService(
+        req.params.id as string,
+      );
+
+    const archive = new ZipArchive({
+      zlib: { level: 6 },
+    });
+
+    archive.on("error", (error) => {
+      res.destroy(error);
+    });
+
+    res.setHeader("Content-Type", "application/zip");
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="notice-${req.params.id}-attachments.zip"`,
+    );
+
+    archive.pipe(res);
+
+    for (const file of files) {
+      archive.append(file.buffer, {
+        name: file.filename,
+      });
+    }
+
+    archive.finalize().catch((error) => {
+      res.destroy(error);
+    });
+  },
+);
+
+const deleteNotice = catchAsync(async (req: Request, res: Response) => {
+  const result = await NoticeService.deleteNoticeService(
+    req.params.id as string,
+    typeof req.user === "object" ? req.user?.userId : undefined,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notice deleted successfully.",
+    data: result,
+  });
+});
+
 export const NoticeController = {
   createNotice,
   getAllNotices,
@@ -135,6 +172,7 @@ export const NoticeController = {
   updateNotice,
   publishNotice,
   archiveNotice,
-  deleteNotice,
   withdrawNotice,
+  downloadAllAttachments,
+  deleteNotice,
 };

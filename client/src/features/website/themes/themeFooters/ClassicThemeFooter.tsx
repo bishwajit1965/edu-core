@@ -1,11 +1,13 @@
 import { Phone } from "lucide-react";
 import type { PublicInstitutionSettings } from "../../../settings/settingsApi";
+import type { Theme } from "../../../theme/themeApi";
 
 interface ClassicThemeFooterProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
 }
 
-const ClassicThemeFooter = ({ settings }: ClassicThemeFooterProps) => {
+const ClassicThemeFooter = ({ themes, settings }: ClassicThemeFooterProps) => {
   const { institution, contact } = settings;
   return (
     <footer id="contact" className="bg-[#142b49] px-5 py-8 text-white">

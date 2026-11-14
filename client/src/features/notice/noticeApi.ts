@@ -135,7 +135,7 @@ export const getAllNotices = async (): Promise<Notice[]> => {
 // Get single notice
 export const getNoticeById = async (id: string): Promise<Notice> => {
   const response = await axiosInstance.get<ApiResponse<Notice>>(
-    `${NOTICE_ENDPOINT}/${id}`,
+    `${NOTICE_ENDPOINT}/public/${id}`,
   );
 
   return response.data.data;
@@ -211,6 +211,20 @@ export const withdrawNotice = async (
   );
 
   return response.data.data;
+};
+
+// Download all notice attachments as ZIP
+export const downloadAllNoticeAttachments = async (
+  id: string,
+): Promise<Blob> => {
+  const response = await axiosInstance.get(
+    `${NOTICE_ENDPOINT}/public/${id}/download-all`,
+    {
+      responseType: "blob",
+    },
+  );
+
+  return response.data;
 };
 
 // Soft delete notice

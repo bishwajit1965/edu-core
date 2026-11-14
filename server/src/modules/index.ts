@@ -6,6 +6,7 @@ import StudentRoutes from "./students";
 import noticeRoutes from "./notice";
 import mediaRoutes from "./media";
 import themeRoutes from "./theme";
+import StudentAuthRoutes from "./studentAuth";
 
 const router = Router();
 
@@ -23,5 +24,7 @@ router.use("/notices", noticeRoutes);
 router.use("/media", mediaRoutes);
 
 router.use("/themes", themeRoutes);
+
+router.use("/student-auth", StudentAuthRoutes);
 
 export default router;

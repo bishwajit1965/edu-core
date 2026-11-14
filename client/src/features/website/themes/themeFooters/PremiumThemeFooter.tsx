@@ -1,10 +1,12 @@
 import type { PublicInstitutionSettings } from "../../../settings/settingsApi";
+import type { Theme } from "../../../theme/themeApi";
 
 interface PremiumThemeFooterProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
 }
 
-const PremiumThemeFooter = ({ settings }: PremiumThemeFooterProps) => {
+const PremiumThemeFooter = ({ themes, settings }: PremiumThemeFooterProps) => {
   const { institution, contact } = settings;
   return (
     <footer id="contact" className="bg-[#111f29] px-5 py-12 text-white">

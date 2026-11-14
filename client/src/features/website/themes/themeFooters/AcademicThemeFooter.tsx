@@ -1,10 +1,16 @@
 import type { PublicInstitutionSettings } from "../../../settings/settingsApi";
+import type { Theme } from "../../../theme/themeApi";
 
 interface AcademicThemeFooterProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
 }
 
-const AcademicThemeFooter = ({ settings }: AcademicThemeFooterProps) => {
+const AcademicThemeFooter = ({
+  themes,
+  settings,
+}: AcademicThemeFooterProps) => {
+  console.log("THEME IN ACADEMIC THEME FOOTER->", themes);
   const { institution, contact } = settings;
   return (
     <footer id="contact" className="bg-slate-900 px-5 py-9 text-white">

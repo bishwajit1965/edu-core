@@ -5,6 +5,24 @@ import {
   InstitutionSettingsModel,
 } from "./institution-settings.interface.js";
 
+const leadershipMessageSchema = new Schema(
+  {
+    role: {
+      type: String,
+      enum: ["GB_CHAIRMAN", "PRINCIPAL", "VICE_PRINCIPAL"],
+      required: true,
+    },
+    name: { type: String, required: true, trim: true },
+    qualification: { type: String, required: true, trim: true },
+    designation: { type: String, trim: true, default: "" },
+    photo: { type: String, default: "" },
+    message: { type: String, default: "" },
+    isActive: { type: Boolean, default: true },
+    displayOrder: { type: Number, default: 1 },
+  },
+  { _id: false },
+);
+
 const institutionSettingsSchema = new Schema<
   IInstitutionSettings,
   InstitutionSettingsModel
@@ -40,6 +58,21 @@ const institutionSettingsSchema = new Schema<
       address: { type: String, default: "" },
       mapUrl: { type: String, default: "" },
     },
+    leadershipMessages: {
+      enabled: { type: Boolean, default: false },
+      title: {
+        type: String,
+        default: "Messages from Our Leadership",
+      },
+      subtitle: {
+        type: String,
+        default: "Vision • Leadership • Excellence",
+      },
+      leaders: {
+        type: [leadershipMessageSchema],
+        default: [],
+      },
+    },
     social: {
       facebook: { type: String, default: "" },
       youtube: { type: String, default: "" },
@@ -73,13 +106,8 @@ const institutionSettingsSchema = new Schema<
         required: true,
         trim: true,
         lowercase: true,
-        default: "modern",
+        default: "modern-professional",
       },
-      // theme: {
-      //   type: String,
-      //   enum: ["classic", "modern", "academic", "vibrant", "premium"],
-      //   default: "modern",
-      // },
     },
   },
   { timestamps: true },

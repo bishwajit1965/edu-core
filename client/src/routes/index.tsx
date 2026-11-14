@@ -23,6 +23,7 @@ import NoticeManagement from "../pages/admin/notice/NoticeManagement";
 import Notices from "../pages/public/Notices";
 import ThemeManagement from "../pages/admin/theme/ThemeManagement";
 import NoticeDetails from "../pages/public/NoticeDetails";
+import StudentAdmission from "../pages/public/StudentAdmission";
 
 export const router = createBrowserRouter([
   // Main layout
@@ -33,29 +34,40 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+        handle: { title: "Home" },
       },
       {
         path: "/about",
         element: <About />,
+        handle: { title: "About Us" },
       },
       {
         path: "/contact",
         element: <Contact />,
+        handle: { title: "Contact" },
       },
       {
         path: "/notices",
         element: <Notices />,
+        handle: { title: "Notices" },
       },
       {
         path: "/notices/:noticeId",
+        handle: { title: "Notice Details" },
         element: <NoticeDetails />,
         loader: async ({ params }) => {
-          return fetch(`/api/v1/notices/${params.noticeId}`);
+          return fetch(`/api/v1/notices/public/${params.noticeId}`);
         },
+      },
+      {
+        path: "/student-admissions",
+        element: <StudentAdmission />,
+        handle: { title: "Admission" },
       },
       {
         path: "/profile",
         element: <Profile />,
+        handle: { title: "My Profile" },
       },
     ],
   },

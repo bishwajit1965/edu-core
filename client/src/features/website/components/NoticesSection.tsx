@@ -24,25 +24,25 @@ const NoticesSection = ({ notices }: { notices: Notice[] }) => {
   console.log("Notice in theme", notice);
   return (
     <div className="space-y-4">
-      {notices.map((notice, index) => {
+      {notices?.slice(0, 3).map((notice, index) => {
         const colorClass = bgColors[index % bgColors.length];
 
         return (
           <article
             key={notice._id}
-            className="flex gap-4 border-b border-slate-300 pb-4"
+            className="flex gap-4 border-b border-r rounded-br-lg border-slate-300 pb-4"
           >
             <div
-              className={`${colorClass} flex h-28 w-20 shrink-0 flex-col items-center justify-center rounded-xl text-white shadow-sm space-y-1`}
+              className={`${colorClass} flex h-28 w-20 shrink-0 flex-col items-center justify-center rounded-xl text-white shadow-sm space-y-1.75`}
             >
-              <span className="text-xl font-extrabold leading-none">
+              <span className="text-2xl font-extrabold leading-none">
                 {notice.publishedAt
                   ? new Date(notice.publishedAt).toLocaleString("en-US", {
                       day: "2-digit",
                     })
                   : ""}
               </span>
-              <span className="mt-1 text-sm">
+              <span className="mt- text-sm">
                 {notice.publishedAt
                   ? new Date(notice.publishedAt).toLocaleString("en-US", {
                       month: "short",
@@ -58,17 +58,17 @@ const NoticesSection = ({ notices }: { notices: Notice[] }) => {
                   : ""}
               </span>
             </div>
-            <div>
+            <div className="space-y-1.5">
               <h3 className="text-xl font-extrabold leading-none line-clamp-2">
                 {notice.title}
               </h3>
-              <p className="mt-1 text-sm leading-6 line-clamp-2 text-slate-500">
+              <p className="text-sm leading-6 line-clamp-2 text-slate-500">
                 {notice.content}
               </p>
-              <p className="text-sm font-bold leading-none">
-                Last date: {normalizeDate(notice.expiresAt)}
+              <p className="text-sm font-bold leading-nones">
+                Deadline: {normalizeDate(notice.expiresAt)}
               </p>
-              <div className="mt-3 flex justify-end">
+              <div className="pr-2 flex justify-end">
                 <button
                   type="button"
                   onClick={() => handleViewNotice(notice._id)}

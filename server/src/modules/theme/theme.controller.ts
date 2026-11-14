@@ -3,13 +3,27 @@ import catchAsync from "../../utils/catchAsync.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { ThemeService } from "./theme.service.js";
 
+const getSlideFiles = (files: Express.Multer.File[]): Express.Multer.File[] => {
+  const slideFiles: Express.Multer.File[] = [];
+
+  files.forEach((file) => {
+    const match = file.fieldname.match(/^slides\[(\d+)\]$/);
+
+    if (match) {
+      const index = Number(match[1]);
+      slideFiles[index] = file;
+    }
+  });
+
+  return slideFiles;
+};
+
 const createTheme = catchAsync(async (req: Request, res: Response) => {
   const files = (req.files ?? []) as Express.Multer.File[];
 
   const previewFile = files.find((file) => file.fieldname === "preview");
-  const slideFiles = files.filter((file) =>
-    file.fieldname.startsWith("slides["),
-  );
+
+  const slideFiles = getSlideFiles(files);
 
   const result = await ThemeService.createThemeService(
     req.body,
@@ -75,12 +89,17 @@ const getThemeBySlug = catchAsync(async (req: Request, res: Response) => {
 
 const updateTheme = catchAsync(async (req: Request, res: Response) => {
   const files = (req.files ?? []) as Express.Multer.File[];
-
-  const previewFile = files.find((file) => file.fieldname === "preview");
-  const slideFiles = files.filter((file) =>
-    file.fieldname.startsWith("slides["),
+  console.log(
+    "THEME UPLOAD FILES:",
+    files.map((file) => ({
+      fieldname: file.fieldname,
+      filename: file.originalname,
+    })),
   );
 
+  const previewFile = files.find((file) => file.fieldname === "preview");
+
+  const slideFiles = getSlideFiles(files);
   const result = await ThemeService.updateThemeService(
     req.params.id as string,
     req.body,

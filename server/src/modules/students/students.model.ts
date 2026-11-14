@@ -75,8 +75,12 @@ const studentSchema = new Schema<IStudent, StudentModel>(
     name: { type: String, required: true, trim: true },
     dateOfBirth: { type: Date },
     gender: { type: String, trim: true },
+    studentEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
     photo: { type: mediaReferenceSchema },
-
     fatherName: { type: String, trim: true },
     motherName: { type: String, trim: true },
     fatherOccupation: { type: String, trim: true },

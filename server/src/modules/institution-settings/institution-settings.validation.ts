@@ -65,7 +65,31 @@ const systemSchema = z.object({
 });
 
 const websiteSchema = z.object({
-  theme: z.enum(["classic", "modern", "academic", "vibrant", "premium"]),
+  theme: z.enum([
+    "classic-traditional",
+    "academic-editorial",
+    "premium-minimal",
+    "modern-professional",
+    "vibrant-friendly",
+  ]),
+});
+
+const leadershipMessageSchema = z.object({
+  role: z.enum(["GB_CHAIRMAN", "PRINCIPAL", "VICE_PRINCIPAL"]),
+  name: z.string().trim().min(1).max(200),
+  qualification: z.string().trim().min(1).max(200),
+  designation: z.string().trim().optional(),
+  photo: z.string().trim().optional(),
+  message: z.string().trim().optional(),
+  isActive: z.boolean().optional(),
+  displayOrder: z.number().int().optional(),
+});
+
+const leadershipMessagesSchema = z.object({
+  enabled: z.boolean().optional(),
+  title: z.string().trim().optional(),
+  subtitle: z.string().trim().optional(),
+  leaders: z.array(leadershipMessageSchema).optional(),
 });
 
 export const createInstitutionSettingsValidationSchema = z.object({
@@ -78,6 +102,7 @@ export const createInstitutionSettingsValidationSchema = z.object({
     features: featuresSchema.optional(),
     system: systemSchema.optional(),
     website: websiteSchema.partial().optional(),
+    leadershipMessages: leadershipMessagesSchema.optional(),
   }),
 });
 
@@ -92,6 +117,7 @@ export const updateInstitutionSettingsValidationSchema = z.object({
       features: featuresSchema.partial().optional(),
       system: systemSchema.partial().optional(),
       website: websiteSchema.partial().optional(),
+      leadershipMessages: leadershipMessagesSchema.partial().optional(),
     })
     .refine((body) => Object.keys(body).length > 0, {
       message: "At least one settings section must be provided.",

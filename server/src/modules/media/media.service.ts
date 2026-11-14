@@ -6,6 +6,7 @@ import type {
   MediaReference,
 } from "./media.interface.js";
 import { fileTypeFromBuffer } from "file-type";
+import { randomUUID } from "node:crypto";
 
 const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -113,7 +114,12 @@ export const uploadMedia = async (
       {
         folder,
         resource_type: resourceType,
+        // Raw files must include their extension in public_id.
+        ...(resourceType === "raw" && {
+          public_id: `${randomUUID()}.${detectedType.ext}`,
+        }),
       },
+
       (error, uploadedFile) => {
         if (error) {
           reject(error);

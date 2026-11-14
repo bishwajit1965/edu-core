@@ -3,15 +3,17 @@ import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, MapPin } from "lucide-react";
 import NoticesSection from "../components/NoticesSection";
+import type { Theme } from "../../theme/themeApi";
 interface ClassicThemeProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
   notices: Notice[];
 }
 
-const ClassicTheme = ({ settings, notices }: ClassicThemeProps) => {
+const ClassicTheme = ({ settings, themes, notices }: ClassicThemeProps) => {
   const { institution, branding, contact, features } = settings;
   const primary = branding?.primaryColor || "#17365d";
-
+  console.log("THEME IN CLASSIC THEME", themes);
   return (
     <main className="min-h-screen bg-[#f8f6f0] text-slate-800">
       <div className="bg-[#142b49] px-5 py-2 text-sm text-white">

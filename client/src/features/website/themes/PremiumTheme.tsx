@@ -2,14 +2,18 @@ import Logo from "../../../components/ui/Logo";
 import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, MoveUpRight } from "lucide-react";
+import type { Theme } from "../../theme/themeApi";
 interface PremiumThemeProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
   notices: Notice[];
 }
 
-const PremiumTheme = ({ settings }: PremiumThemeProps) => {
+const PremiumTheme = ({ themes, settings }: PremiumThemeProps) => {
   const { institution, branding, features } = settings;
   const primary = branding?.primaryColor || "#172b3a";
+
+  console.log("THEME IN PREMIUM THEME", themes);
   return (
     <main className="min-h-screen bg-[#faf9f6] text-[#202a30]">
       <header className="bg-[#111f29] text-white">

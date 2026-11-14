@@ -1,10 +1,12 @@
 import type { PublicInstitutionSettings } from "../../../settings/settingsApi";
+import type { Theme } from "../../../theme/themeApi";
 
 interface VibrantThemeFooterProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
 }
 
-const VibrantThemeFooter = ({ settings }: VibrantThemeFooterProps) => {
+const VibrantThemeFooter = ({ themes, settings }: VibrantThemeFooterProps) => {
   const { institution, contact } = settings;
   return (
     <footer id="contact" className="bg-slate-950 px-5 py-9 text-white">

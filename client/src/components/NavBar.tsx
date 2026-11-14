@@ -1,30 +1,48 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { LucideUserCheck2 } from "lucide-react";
-import Logo from "./ui/Logo";
 import type { PublicInstitutionSettings } from "../features/settings/settingsApi.js";
+import type { Theme } from "../features/theme/themeApi.js";
 
 const NavBar = ({
   settings,
+  themes,
 }: {
   settings?: PublicInstitutionSettings | null;
+  themes?: Theme[];
 }) => {
+  console.log("THEME IN NAVBAR", themes);
+
   const { user, logout } = useAuth() as {
     user?: { avatar?: string; role?: string };
     logout: () => void;
   };
-  const { institution, branding, website } = (settings ??
+
+  const { branding, website } = (settings ??
     {}) as PublicInstitutionSettings & {
     website?: { name?: string; theme?: unknown };
   };
-  const primaryColor = branding?.primaryColor;
 
+  // THEME SET IN DATABASE
   const theme = website?.theme;
+
+  // SELECTS THE ACTIVE THEME
+  const selectedTheme = (themes ?? []).find((item) => item.slug === theme);
+
+  // INSTITUTION RELATED BRANDING SETTINGS + THEME COMBINED
+  const headerConfig = selectedTheme?.config?.layout?.header;
+  const themeColors = selectedTheme?.config?.colors;
+  const themeTypography = selectedTheme?.config?.typography;
+  const primaryColor =
+    themeColors?.primary || branding?.primaryColor || "#000000";
+  const institutionName = settings?.institution?.name;
+  const logoUrl = settings?.branding?.logo;
 
   console.log("THeme in navbar", theme);
 
   const navigate = useNavigate();
 
+  // LOGOUT
   const handleLogout = () => {
     logout();
     navigate("/auth/login");
@@ -58,7 +76,16 @@ const NavBar = ({
     },
   ];
   return (
-    <div className="navbar bg-base-200 shadow-sm sticky top-0 lg:px-24 z-50">
+    <div
+      className={`navbar shadow-sm lg:px-24 z-50 ${
+        headerConfig?.sticky !== false ? "sticky top-0" : ""
+      }`}
+      style={{
+        backgroundColor: themeColors?.surface || "#ffffff",
+        color: themeColors?.text || "#1f2937",
+        fontFamily: themeTypography?.bodyFont || "inherit",
+      }}
+    >
       <div className="navbar-start">
         <div className="dropdown lg:hidden flex">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
@@ -70,13 +97,12 @@ const NavBar = ({
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              {" "}
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M4 6h16M4 12h16M4 18h7"
-              />{" "}
+              />
             </svg>
           </div>
           <ul
@@ -90,11 +116,15 @@ const NavBar = ({
                   end={menu.path === "/"}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 rounded transition ${
-                      isActive
-                        ? "bg-base-200 text-slate-900"
-                        : "hover:bg-slate-300 hover:text-slate-900"
+                      isActive ? "font-semibold" : ""
                     }`
                   }
+                  style={({ isActive }) => ({
+                    backgroundColor: "transparent",
+                    color: isActive
+                      ? primaryColor
+                      : themeColors?.text || "#1f2937",
+                  })}
                 >
                   {menu.name}
                 </NavLink>
@@ -102,19 +132,31 @@ const NavBar = ({
             ))}
           </ul>
         </div>
-        <a className="hidden lg:flex cursor-pointer">
-          <div className="flex items-center gap-2">
-            <Logo primaryColor={primaryColor ?? "#000000"} />{" "}
-            <span className="lg:text-2xl text-lg font-extrabold">
-              {institution?.name || "EDU CORE COLLEGE"}
+        <a
+          href="/"
+          className="hidden lg:flex items-center lg:gap-1.5 cursor-pointer"
+        >
+          {headerConfig?.showLogo !== false && (
+            <img
+              src={logoUrl || "/default-logo.png"}
+              alt={`${institutionName || "Institution"} Logo`}
+              className="h-12 w-auto object-contain"
+            />
+          )}
+          {headerConfig?.showInstitutionName !== false && (
+            <span
+              className="font-extrabold text-lg"
+              style={{ color: primaryColor }}
+            >
+              {institutionName}
             </span>
-          </div>
+          )}
         </a>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul
           tabIndex={-1}
-          className="menu menu-horizontal px-1 [&_li>a]:rounded-none [&_li>a]:bg-transparent [&_li>a]:hover:bg-transparent shadow-none"
+          className="menu menu-horizontal px-1 [&_li>a]:rounded-none [&_li>a]:bg-transparent [&_li>a]:hover:bg-transparent shadow-none after:bg-(--navbar-primary)"
         >
           {publicMenuItems.map((menu) => (
             <li key={menu.id}>
@@ -123,15 +165,18 @@ const NavBar = ({
                 end={menu.path === "/"}
                 className={({ isActive }) =>
                   `relative flex items-center gap-3 px-4 py-2 rounded-none
-  bg-transparent! shadow-none!
-  after:absolute after:left-4 after:right-4 after:bottom-0
-  after:h-0.5 after:bg-primary
-  after:transition-transform after:duration-300
-  ${
-    isActive
-      ? "text-primary after:scale-x-100"
-      : "text-base-content after:scale-x-0 hover:text-primary hover:after:scale-x-100"
-  }`
+                    bg-transparent! shadow-none!
+                    after:absolute after:left-4 after:right-4 after:bottom-0
+                    after:h-0.5 after:transition-transform after:duration-300 after:bg-(--navbar-primary)
+                    ${isActive ? "after:scale-x-100" : "after:scale-x-0 hover:after:scale-x-100"}`
+                }
+                style={({ isActive }) =>
+                  ({
+                    color: isActive
+                      ? primaryColor
+                      : themeColors?.text || "#1f2937",
+                    "--navbar-primary": primaryColor,
+                  }) as React.CSSProperties
                 }
               >
                 {menu.name}

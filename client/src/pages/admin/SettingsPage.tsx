@@ -8,12 +8,18 @@ import {
   getInstitutionSettings,
   updateInstitutionSettings,
   type InstitutionSettings,
+  type ILeadershipMessage,
+  type LeadershipRole,
+  type InstitutionThemeSlug,
 } from "../../features/settings/settingsApi";
 import Select from "../../components/ui/Select";
 import Textarea from "../../components/ui/Textarea";
 import { LucideLoaderCircle, LucideSave } from "lucide-react";
 import Checkbox from "../../components/ui/Checkbox";
 import { showSuccess, showError } from "../../utils/alert.js";
+import { getActiveThemes } from "../../features/theme/themeApi.js";
+import { PUBLIC_API_KEYS } from "../../hooks/publicDataFetcherHooks/queryKeyConstants.js";
+import { usePublicApiQuery } from "../../hooks/publicDataFetcherHooks/usePublicApiQuery.js";
 
 const defaultSettings: InstitutionSettings = {
   institution: {
@@ -66,7 +72,13 @@ const defaultSettings: InstitutionSettings = {
     language: "bn",
   },
   website: {
-    theme: "modern",
+    theme: "modern-professional",
+  },
+  leadershipMessages: {
+    enabled: false,
+    title: "Messages from Our Leadership",
+    subtitle: "Vision • Leadership • Excellence",
+    leaders: [],
   },
 };
 
@@ -77,6 +89,13 @@ const SettingsPage = () => {
   const [loadError, setLoadError] = useState("");
   const [keywordsText, setKeywordsText] = useState("");
   const [settingsExist, setSettingsExist] = useState(true);
+
+  const { data: themes } = usePublicApiQuery({
+    key: [...PUBLIC_API_KEYS.THEME],
+    queryFn: getActiveThemes,
+  });
+
+  console.log("Theme in settings page", themes);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -244,6 +263,65 @@ const SettingsPage = () => {
     );
   };
 
+  const handleLeadershipMessagesChange = (
+    field: "enabled" | "title" | "subtitle",
+    value: boolean | string,
+  ) => {
+    setSettings((previous) =>
+      previous
+        ? {
+            ...previous,
+            leadershipMessages: {
+              ...previous.leadershipMessages,
+              [field]: value,
+            },
+          }
+        : previous,
+    );
+  };
+
+  const handleLeadershipLeaderChange = <K extends keyof ILeadershipMessage>(
+    role: LeadershipRole,
+    field: K,
+    value: ILeadershipMessage[K],
+  ) => {
+    setSettings((previous) => {
+      if (!previous) return previous;
+
+      const leaders = [...previous.leadershipMessages.leaders];
+
+      const index = leaders.findIndex((leader) => leader.role === role);
+
+      if (index === -1) {
+        leaders.push({
+          role,
+          name: "",
+          qualification: "",
+          designation: "",
+          photo: "",
+          message: "",
+          isActive: true,
+          displayOrder:
+            role === "GB_CHAIRMAN" ? 1 : role === "PRINCIPAL" ? 2 : 3,
+          [field]: value,
+        } as ILeadershipMessage);
+      } else {
+        leaders[index] = {
+          ...leaders[index],
+          [field]: value,
+        };
+      }
+
+      return {
+        ...previous,
+        leadershipMessages: {
+          ...previous.leadershipMessages,
+          leaders,
+        },
+      };
+    });
+  };
+
   const handleSave = async () => {
     if (!settings) return;
 
@@ -259,6 +337,7 @@ const SettingsPage = () => {
         features: settings.features,
         system: settings.system,
         website: settings.website,
+        leadershipMessages: settings.leadershipMessages,
       };
 
       const savedSettings = settingsExist
@@ -277,42 +356,6 @@ const SettingsPage = () => {
       setSaving(false);
     }
   };
-
-  // const handleSave = async () => {
-  //   if (!settings) return;
-
-  //   setSaving(true);
-
-  //   try {
-  //     const updatedSettings = await updateInstitutionSettings({
-  //       institution: settings.institution,
-  //       branding: settings.branding,
-  //       seo: settings.seo,
-  //       contact: settings.contact,
-  //       social: settings.social,
-  //       features: settings.features,
-  //       system: settings.system,
-  //       website: settings.website,
-  //     });
-
-  //     setSettings((previous) =>
-  //       previous
-  //         ? {
-  //             ...previous,
-  //             ...updatedSettings,
-  //           }
-  //         : updatedSettings,
-  //     );
-  //     if (updatedSettings) {
-  //       showSuccess("Institution settings saved!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to save institution settings:", error);
-  //     showError("Woops! settings update failed!");
-  //   } finally {
-  //     setSaving(false);
-  //   }
-  // };
 
   if (loading) {
     return <p className="p-6">Loading institution settings...</p>;
@@ -340,103 +383,6 @@ const SettingsPage = () => {
       />
 
       {/* Institution Info Section */}
-      {/* <Card
-        title="Institution Information"
-        description="Basic details about your school or college."
-        className=""
-      >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Input
-            label="Institution Name"
-            name="name"
-            placeholder="Enter institution name"
-            value={settings?.institution.name ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("name", event.target.value)
-            }
-            required
-          />
-
-          <Select
-            label="Institution Type"
-            name="type"
-            value={settings?.institution.institutionType ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("institutionType", event.target.value)
-            }
-            options={[
-              { label: "School", value: "SCHOOL" },
-              { label: "College", value: "COLLEGE" },
-              { label: "School & College", value: "SCHOOL_AND_COLLEGE" },
-            ]}
-            placeholder="Select institution type"
-            required
-          />
-
-          <Input
-            label="EIIN"
-            name="eiin"
-            placeholder="Enter EIIN"
-            value={settings?.institution.eiin ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("eiin", event.target.value)
-            }
-          />
-
-          <Input
-            label="Institution Code"
-            name="code"
-            placeholder="Enter institution code"
-            value={settings?.institution.code ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("code", event.target.value)
-            }
-            required
-          />
-
-          <Input
-            label="Phone"
-            name="phone"
-            placeholder="Enter phone number"
-            value={settings?.institution.phone ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("phone", event.target.value)
-            }
-          />
-
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Enter email address"
-            value={settings?.institution.email ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("email", event.target.value)
-            }
-          />
-
-          <Input
-            label="Address"
-            name="address"
-            placeholder="Enter institution address"
-            value={settings?.institution.address ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("address", event.target.value)
-            }
-          />
-
-          <Input
-            label="Website"
-            name="website"
-            type="url"
-            placeholder="https://example.com"
-            value={settings?.institution.website ?? ""}
-            onChange={(event) =>
-              handleInstitutionChange("website", event.target.value)
-            }
-          />
-        </div>
-      </Card> */}
       <Card
         title="Institution Information"
         description="Basic details about your school or college."
@@ -576,6 +522,7 @@ const SettingsPage = () => {
           </div>
         </div>
       </Card>
+
       {/* Branding Section */}
       <Card
         title="Branding"
@@ -626,20 +573,19 @@ const SettingsPage = () => {
           <Select
             label="Select Theme"
             name="theme"
-            value={settings?.website.theme ?? "modern"}
+            value={settings?.website.theme ?? "modern-professional"}
             onChange={(event) =>
               handleWebsiteChange(
                 "theme",
-                event.target.value as InstitutionSettings["website"]["theme"],
+                event.target.value as InstitutionThemeSlug,
               )
             }
-            options={[
-              { label: "Classic & Traditional", value: "classic" },
-              { label: "Modern & Professional", value: "modern" },
-              { label: "Academic & Editorial", value: "academic" },
-              { label: "Vibrant & Student-Friendly", value: "vibrant" },
-              { label: "Premium & Minimal", value: "premium" },
-            ]}
+            options={
+              themes?.map((theme) => ({
+                label: theme?.name,
+                value: theme?.slug,
+              })) ?? []
+            }
           />
         </div>
       </Card>
@@ -792,6 +738,161 @@ const SettingsPage = () => {
               handleSocialChange("linkedin", event.target.value)
             }
           />
+        </div>
+      </Card>
+
+      {/* Leadership Messages Card */}
+
+      <Card
+        title="Leadership Messages"
+        description="Manage messages from your institution's leadership."
+      >
+        <div className="space-y-6">
+          <Checkbox
+            label="Enable Leadership Messages"
+            name="leadershipMessagesEnabled"
+            checked={settings?.leadershipMessages.enabled ?? false}
+            onChange={(event) =>
+              handleLeadershipMessagesChange("enabled", event.target.checked)
+            }
+          />
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Input
+              label="Section Title"
+              name="leadershipTitle"
+              value={settings?.leadershipMessages.title ?? ""}
+              onChange={(event) =>
+                handleLeadershipMessagesChange("title", event.target.value)
+              }
+            />
+
+            <Input
+              label="Section Subtitle"
+              name="leadershipSubtitle"
+              value={settings?.leadershipMessages.subtitle ?? ""}
+              onChange={(event) =>
+                handleLeadershipMessagesChange("subtitle", event.target.value)
+              }
+            />
+          </div>
+
+          {(
+            [
+              {
+                role: "GB_CHAIRMAN",
+                label: "GB Chairman",
+              },
+              {
+                role: "PRINCIPAL",
+                label: "Principal",
+              },
+              {
+                role: "VICE_PRINCIPAL",
+                label: "Vice-Principal",
+              },
+            ] as const
+          ).map(({ role, label }) => {
+            const leader = settings?.leadershipMessages.leaders.find(
+              (item) => item.role === role,
+            );
+
+            return (
+              <div
+                key={role}
+                className="space-y-4 rounded-lg border border-gray-200 p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-800">{label}</h3>
+
+                  <Checkbox
+                    label="Active"
+                    name={`${role}-active`}
+                    checked={leader?.isActive ?? true}
+                    onChange={(event) =>
+                      handleLeadershipLeaderChange(
+                        role,
+                        "isActive",
+                        event.target.checked,
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Input
+                    label="Full Name"
+                    name={`${role}-name`}
+                    placeholder="Enter full name"
+                    value={leader?.name ?? ""}
+                    onChange={(event) =>
+                      handleLeadershipLeaderChange(
+                        role,
+                        "name",
+                        event.target.value,
+                      )
+                    }
+                  />
+
+                  <Input
+                    label="Qualification"
+                    name={`${role}-qualification`}
+                    placeholder="e.g. M.A., M.Ed."
+                    value={leader?.qualification ?? ""}
+                    onChange={(event) =>
+                      handleLeadershipLeaderChange(
+                        role,
+                        "qualification",
+                        event.target.value,
+                      )
+                    }
+                  />
+
+                  <Input
+                    label="Designation"
+                    name={`${role}-designation`}
+                    placeholder="Enter designation"
+                    value={leader?.designation ?? ""}
+                    onChange={(event) =>
+                      handleLeadershipLeaderChange(
+                        role,
+                        "designation",
+                        event.target.value,
+                      )
+                    }
+                  />
+
+                  <Input
+                    label="Portrait URL"
+                    name={`${role}-photo`}
+                    placeholder="Enter portrait image URL"
+                    value={leader?.photo ?? ""}
+                    onChange={(event) =>
+                      handleLeadershipLeaderChange(
+                        role,
+                        "photo",
+                        event.target.value,
+                      )
+                    }
+                  />
+                </div>
+
+                <Textarea
+                  label="Leadership Message"
+                  name={`${role}-message`}
+                  placeholder={`Write the message from the ${label}...`}
+                  value={leader?.message ?? ""}
+                  onChange={(event) =>
+                    handleLeadershipLeaderChange(
+                      role,
+                      "message",
+                      event.target.value,
+                    )
+                  }
+                />
+              </div>
+            );
+          })}
         </div>
       </Card>
 

@@ -40,6 +40,7 @@ export interface Student {
   studentId: string;
   name: string;
   dateOfBirth?: string;
+  studentEmail?: string;
   gender?: string;
   photo?: {
     url: string;

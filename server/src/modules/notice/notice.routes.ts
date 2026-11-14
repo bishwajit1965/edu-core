@@ -16,6 +16,12 @@ const router = Router();
 // Publicly visible notices fetched
 router.get("/public", NoticeController.getAllPublicNotices);
 
+// Fetch publicly visible notice
+router.get("/public/:id", NoticeController.getSingleNotice);
+
+// Download all attachments as ZIP
+router.get("/public/:id/download-all", NoticeController.downloadAllAttachments);
+
 // Notice management: Principal (ADMIN) only.
 router.use(authMiddleware, authorize(USER_ROLE.ADMIN));
 
@@ -27,7 +33,7 @@ router.post(
 
 router.get("/", NoticeController.getAllNotices);
 
-router.get("/:id", NoticeController.getSingleNotice);
+// router.get("/:id", NoticeController.getSingleNotice);
 
 router.patch(
   "/:id",

@@ -1,10 +1,12 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import type { PublicInstitutionSettings } from "../../../settings/settingsApi";
+import type { Theme } from "../../../theme/themeApi";
 
 interface ModernThemeFooterProps {
   settings: PublicInstitutionSettings;
+  themes: Theme[];
 }
-const ModernThemeFooter = ({ settings }: ModernThemeFooterProps) => {
+const ModernThemeFooter = ({ themes, settings }: ModernThemeFooterProps) => {
   const { institution, contact, features } = settings;
   return (
     <footer id="contact" className="bg-slate-950 text-white">
