@@ -6,6 +6,9 @@ export const PUBLIC_API_KEYS = {
   NOTICE_DETAILS: (noticeId: string) =>
     ["public", "notices", noticeId] as const,
 
+  // PUBLIC STUDENT DASHBOARD PROFILE
+  ME: ["public", "me"],
+
   SETTING: ["public", "settings"],
 
   THEME: ["public", "themes"],

@@ -4,9 +4,36 @@ import { IStudent, StudentModel } from "./students.interface.js";
 
 import {
   CLEARANCE_STATUS,
+  STUDENT_ACADEMIC_STATE,
   STUDENT_ADMISSION_TYPE,
   STUDENT_STATUS,
 } from "./students.constant.js";
+
+const academicHistorySchema = new Schema(
+  {
+    academicSession: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    className: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    group: { type: String, trim: true },
+    section: { type: String, trim: true },
+    rollNumber: { type: String, trim: true },
+    academicState: {
+      type: String,
+      enum: Object.values(STUDENT_ACADEMIC_STATE),
+      default: STUDENT_ACADEMIC_STATE.ENROLLED,
+      required: true,
+    },
+    remarks: { type: String, trim: true },
+  },
+  { _id: false },
+);
 
 const mediaReferenceSchema = new Schema(
   {
@@ -63,7 +90,7 @@ const clearanceSchema = new Schema(
   { _id: false },
 );
 
-const studentSchema = new Schema<IStudent, StudentModel>(
+const studentSchema = new Schema(
   {
     studentId: {
       type: String,
@@ -83,6 +110,24 @@ const studentSchema = new Schema<IStudent, StudentModel>(
     photo: { type: mediaReferenceSchema },
     fatherName: { type: String, trim: true },
     motherName: { type: String, trim: true },
+    fatherNationalId: {
+      type: String,
+      trim: true,
+    },
+
+    academicHistory: {
+      type: [academicHistorySchema],
+      default: [],
+    },
+    motherOccupation: {
+      type: String,
+      trim: true,
+    },
+
+    birthRegistrationNumber: {
+      type: String,
+      trim: true,
+    },
     fatherOccupation: { type: String, trim: true },
     yearlyFamilyIncome: { type: Number, min: 0 },
 

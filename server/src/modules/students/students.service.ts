@@ -192,9 +192,25 @@ const createStudentService = async (
       }
 
       // Attach generated references only when building the database payload.
+      const academicHistoryEntry = {
+        academicSession: payload.academicSession as string,
+        className: payload.className as string,
+        academicState: "current" as const,
+        ...(payload.group !== undefined
+          ? { group: payload.group as string }
+          : {}),
+        ...(payload.section !== undefined
+          ? { section: payload.section as string }
+          : {}),
+        ...(payload.rollNumber !== undefined
+          ? { rollNumber: payload.rollNumber as string }
+          : {}),
+      };
+
       const persistencePayload: Record<string, unknown> = {
         ...payload,
         admissionDate,
+        academicHistory: [academicHistoryEntry],
       };
 
       if (media.studentPhoto) {
@@ -341,6 +357,24 @@ const updateStudentService = async (
     }));
 
     const oldGuardianPublicIdsToDelete: string[] = [];
+
+    // Initialize academic history for legacy students only.
+    if (!student.academicHistory?.length) {
+      student.academicHistory = [
+        {
+          academicSession: student.academicSession,
+          className: student.className,
+          academicState: "current",
+          ...(student.group !== undefined ? { group: student.group } : {}),
+          ...(student.section !== undefined
+            ? { section: student.section }
+            : {}),
+          ...(student.rollNumber !== undefined
+            ? { rollNumber: student.rollNumber }
+            : {}),
+        },
+      ];
+    }
 
     // Ordinary data update.
     Object.assign(student, payload);

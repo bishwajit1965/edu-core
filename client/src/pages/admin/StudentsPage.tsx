@@ -88,8 +88,12 @@ const StudentsPage = () => {
     dateOfBirth: "",
     gender: "",
     studentEmail: "",
+    birthRegistrationNumber: "",
+    status: "",
     fatherName: "",
+    fatherNationalId: "",
     motherName: "",
+    motherOccupation: "",
     guardianName: "",
     guardianRelationship: "Father",
     guardianPhone: "",
@@ -107,6 +111,9 @@ const StudentsPage = () => {
     section: "",
     rollNumber: "",
     educationBoard: "",
+    boardRegistrationNumber: "",
+    registrationYear: "",
+    boardRollNumber: "",
     tcNumber: "",
     tcIssueDate: "",
     previousInstitutionName: "",
@@ -121,8 +128,12 @@ const StudentsPage = () => {
       dateOfBirth: "",
       gender: "",
       studentEmail: "",
+      birthRegistrationNumber: "",
+      status: "",
       fatherName: "",
+      fatherNationalId: "",
       motherName: "",
+      motherOccupation: "",
       guardianName: "",
       guardianRelationship: "Father",
       guardianPhone: "",
@@ -140,6 +151,9 @@ const StudentsPage = () => {
       section: "",
       rollNumber: "",
       educationBoard: "",
+      boardRegistrationNumber: "",
+      registrationYear: "",
+      boardRollNumber: "",
       tcNumber: "",
       tcIssueDate: "",
       previousInstitutionName: "",
@@ -214,11 +228,15 @@ const StudentsPage = () => {
     try {
       const payload: CreateStudentPayload = {
         name: form.name.trim(),
+        birthRegistrationNumber: form.birthRegistrationNumber.trim(),
+        status: (form.status || "active") as CreateStudentPayload["status"],
         ...(form.dateOfBirth && { dateOfBirth: form.dateOfBirth }),
         ...(form.gender && { gender: form.gender }),
         ...(form.studentEmail && { studentEmail: form.studentEmail }),
         ...(form.fatherName.trim() && { fatherName: form.fatherName.trim() }),
+        fatherNationalId: form.fatherNationalId.trim(),
         ...(form.motherName.trim() && { motherName: form.motherName.trim() }),
+        motherOccupation: form.motherOccupation.trim(),
         ...(form.fatherOccupation === "Other"
           ? {
               fatherOccupation: form.fatherOccupationOther.trim(),
@@ -280,10 +298,18 @@ const StudentsPage = () => {
         ...(form.section.trim() && { section: form.section.trim() }),
         ...(form.rollNumber.trim() && { rollNumber: form.rollNumber.trim() }),
         ...(form.educationBoard && { educationBoard: form.educationBoard }),
+        ...(form.boardRegistrationNumber && {
+          boardRegistrationNumber: form.boardRegistrationNumber,
+        }),
+        ...(form.registrationYear && {
+          registrationYear: Number(form.registrationYear),
+        }),
+        ...(form.boardRollNumber && { boardRollNumber: form.boardRollNumber }),
 
+        academicHistory: [],
         duesClearance: { status: "pending" },
         libraryClearance: { status: "pending" },
-        status: "active",
+        // status: "active",
         isDeleted: false,
       };
 
@@ -431,6 +457,10 @@ const StudentsPage = () => {
 
     setForm({
       name: student.name ?? "",
+      birthRegistrationNumber: student.birthRegistrationNumber ?? "",
+      status: student.status ?? "",
+      fatherNationalId: student.fatherNationalId ?? "",
+      motherOccupation: student.motherOccupation ?? "",
       dateOfBirth: student.dateOfBirth
         ? new Date(student.dateOfBirth).toISOString().slice(0, 10)
         : "",
@@ -474,6 +504,12 @@ const StudentsPage = () => {
         ? new Date(student.admissionDate).toISOString().slice(0, 10)
         : "",
       admissionType: student.admissionType,
+      boardRollNumber: student.boardRollNumber ?? "",
+      registrationYear:
+        student.registrationYear != null
+          ? String(student.registrationYear)
+          : "",
+      boardRegistrationNumber: student.boardRegistrationNumber ?? "",
       academicSession: student.academicSession ?? "",
       className: student.className ?? "",
       group: student.group ?? "",
@@ -751,11 +787,27 @@ const StudentsPage = () => {
               />
 
               <Input
+                label="Student's Birth Registration Number"
+                name="birthRegistrationNumber"
+                value={form.birthRegistrationNumber}
+                onChange={handleFormChange}
+                placeholder="Enter birth registration number"
+              />
+
+              <Input
                 label="Father's Name"
                 name="fatherName"
                 value={form.fatherName}
                 onChange={handleFormChange}
                 placeholder="Enter father's name"
+              />
+
+              <Input
+                label="Father's National ID"
+                name="fatherNationalId"
+                value={form.fatherNationalId}
+                onChange={handleFormChange}
+                placeholder="Enter father's National ID"
               />
 
               <Input
@@ -772,6 +824,14 @@ const StudentsPage = () => {
                 value={form.fatherOccupation}
                 onChange={handleFormChange}
                 options={occupationOptions}
+              />
+
+              <Input
+                label="Mother's Occupation"
+                name="motherOccupation"
+                value={form.motherOccupation}
+                onChange={handleFormChange}
+                placeholder="Enter mother's occupation"
               />
 
               {form.fatherOccupation === "Other" && (
@@ -943,6 +1003,21 @@ const StudentsPage = () => {
                 required
               />
 
+              <Select
+                label="Student Status"
+                id="status"
+                name="status"
+                value={form.status}
+                onChange={handleFormChange}
+                options={[
+                  { label: "Active", value: "active" },
+                  { label: "Inactive", value: "inactive" },
+                  { label: "Transferred", value: "transferred" },
+                  { label: "Passed Out", value: "passed-out" },
+                  { label: "Graduated", value: "graduated" },
+                ]}
+                required
+              />
               <Input
                 label="Academic Session"
                 name="academicSession"
@@ -1050,6 +1125,28 @@ const StudentsPage = () => {
                     value: "Bangladesh Technical Education Board",
                   },
                 ]}
+              />
+
+              <Input
+                label="Board Registration Number"
+                name="boardRegistrationNumber"
+                value={form.boardRegistrationNumber}
+                onChange={handleFormChange}
+              />
+
+              <Input
+                label="Registration Year"
+                name="registrationYear"
+                type="number"
+                value={form.registrationYear}
+                onChange={handleFormChange}
+              />
+
+              <Input
+                label="Board Roll Number"
+                name="boardRollNumber"
+                value={form.boardRollNumber}
+                onChange={handleFormChange}
               />
             </div>
           </Card>

@@ -168,7 +168,6 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
       {/*=====================================
       |* TOP CONTACT BAR SECTION
       |* =====================================*/}
-
       <section className="">
         {headerConfig?.showTopBar !== false && (
           <div
@@ -253,11 +252,9 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
           <LeadershipMessageSection settings={settings} themes={themes ?? []} />
         </header>
       </section>
-
       {/*=====================================
       |* HERO SECTION
       |* ==================================s===*/}
-
       {heroConfig?.showHero && currentSlide && (
         <section className="bg-yellow-500s borders">
           <div
@@ -363,7 +360,7 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
       )}
 
       {/* Feature strip overlapping a part of Hero bottom*/}
-      <section className="relative z-10 mx-auto lg:-mt-28 -mt-14 max-w-7xl px-5 lg:px-6">
+      <section className="relative z-10 mx-auto lg:-mt-36 -mt-16 max-w-7xl px-5 lg:px-6">
         <div className="grid grid-cols-1 overflow-hidden rounded-2xl bg-white shadow-xl shadow-slate-200/70 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
@@ -405,11 +402,9 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
           })}
         </div>
       </section>
-
       {/*=====================================
       |* FEATURE NAVIGATION PANEL
       |* =====================================*/}
-
       <section
         className="relative z-20 mx-auto w-full px-4 lg:px-0"
         style={{ maxWidth: layout?.maxWidth || "1280px" }}
@@ -519,11 +514,9 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
           </div>
         </div>
       </section>
-
       {/*=====================================
       |* ABOUT & NOTICE SECTION
       |* =====================================*/}
-
       {(isSectionEnabled("about") || isSectionEnabled("notices")) && (
         <div className="">
           <section
@@ -614,11 +607,9 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
           </section>
         </div>
       )}
-
       {/*=====================================
       |* ACADEMIC PROGRESS SECTION
       |* =====================================*/}
-
       {isSectionEnabled("academic") && (
         <section className="">
           <div
@@ -691,7 +682,6 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
       {/*=====================================
       |* ADMISSION CALL TO ACTION SECTION
       |* =====================================*/}
-
       {features?.admissions && (
         <section className="bg-emerald-500s">
           <div

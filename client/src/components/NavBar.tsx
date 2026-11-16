@@ -74,6 +74,11 @@ const NavBar = ({
       name: "Profile",
       path: "/profile",
     },
+    {
+      id: 6,
+      name: "Student Portal",
+      path: "/student-portal/student/login",
+    },
   ];
   return (
     <div

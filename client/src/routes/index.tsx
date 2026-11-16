@@ -24,9 +24,19 @@ import Notices from "../pages/public/Notices";
 import ThemeManagement from "../pages/admin/theme/ThemeManagement";
 import NoticeDetails from "../pages/public/NoticeDetails";
 import StudentAdmission from "../pages/public/StudentAdmission";
+import StudentPortalLayout from "../features/website/layouts/StudentPortalLayout";
+import StudentDashboard from "../features/website/publicModules/student/StudentDashboard";
+import StudentExaminations from "../features/website/publicModules/student/StudentExaminations";
+import StudentProfile from "../features/website/publicModules/student/StudentProfile";
+import StudentNotices from "../features/website/publicModules/student/StudentNotices";
+import StudentRoutine from "../features/website/publicModules/student/StudentRoutine";
+import StudentResults from "../features/website/publicModules/student/StudentResults";
+import StudentLogin from "../features/website/publicModules/student/StudentLogin";
+import StudentVerifyOTP from "../features/website/publicModules/student/StudentVerifyOTP";
+import StudentAuthLayout from "../features/website/layouts/StudentAuthLayout";
 
 export const router = createBrowserRouter([
-  // Main layout
+  // MAIN LAYOUT
   {
     path: "/",
     element: <MainLayout />,
@@ -72,7 +82,63 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Auth layout
+  // STUDENT AUTH LAYOUT
+  {
+    path: "/student-portal",
+    element: <StudentAuthLayout />,
+    children: [
+      {
+        path: "/student-portal/student/login",
+        element: <StudentLogin />,
+        handle: { title: "Student Login" },
+      },
+      {
+        path: "/student-portal/student/verify-otp",
+        element: <StudentVerifyOTP />,
+        handle: { title: "Verify OTP" },
+      },
+    ],
+  },
+
+  // STUDENT PORTAL DASHBOARD LAYOUT
+  {
+    path: "/student-portal",
+    element: <StudentPortalLayout />,
+    children: [
+      {
+        path: "/student-portal/student/dashboard",
+        element: <StudentDashboard />,
+        handle: { title: "My Dashboard" },
+      },
+      {
+        path: "/student-portal/student/profile",
+        element: <StudentProfile />,
+        handle: { title: "My Profile" },
+      },
+      {
+        path: "/student-portal/student/notices",
+        element: <StudentNotices />,
+        handle: { title: "Student Notices" },
+      },
+      {
+        path: "/student-portal/student/routine",
+        element: <StudentRoutine />,
+        handle: { title: "Class Routine" },
+      },
+      {
+        path: "/student-portal/student/examinations",
+        element: <StudentExaminations />,
+        handle: { title: "My Profile" },
+      },
+      {
+        path: "/student-portal/student/results",
+        element: <StudentResults />,
+        handle: { title: "My Results" },
+      },
+    ],
+  },
+
+  // AUTH LAYOUT
   {
     path: "/auth",
     element: <AuthLayout />,
@@ -108,7 +174,7 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Admin layout
+  // ADMIN LAYOUT
   {
     path: "/admin",
     element: (

@@ -23,6 +23,7 @@ const Home = () => {
 
   // Notice related data state
   const [notices, setNotices] = useState<Notice[]>([]);
+
   console.log("Notices in home page", notices);
 
   useEffect(() => {

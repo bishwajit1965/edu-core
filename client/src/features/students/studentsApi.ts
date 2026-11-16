@@ -1,11 +1,37 @@
 import axiosInstance from "../../lib/axios.js";
+import studentAxios from "../../lib/studentAxios.js";
 
 export type StudentAdmissionType = "regular" | "tc";
 
-export type StudentStatus = "active" | "inactive" | "transferred" | "graduated";
+export type StudentStatus =
+  | "active"
+  | "inactive"
+  | "transferred"
+  | "graduated"
+  | "passed-out";
 
 export type ClearanceStatus = "pending" | "cleared" | "not_applicable";
 
+export type StudentAcademicState =
+  | "enrolled"
+  | "current"
+  | "passed"
+  | "failed"
+  | "promoted"
+  | "demoted"
+  | "transferred"
+  | "passed-out"
+  | "graduated";
+
+export interface StudentAcademicHistory {
+  academicSession: string;
+  className: string;
+  group?: string;
+  section?: string;
+  rollNumber?: string;
+  academicState: StudentAcademicState;
+  remarks?: string;
+}
 export interface StudentGuardian {
   name: string;
   relationship: string;
@@ -46,9 +72,12 @@ export interface Student {
     url: string;
     publicId: string;
   };
+  birthRegistrationNumber: string;
   fatherName?: string;
+  fatherNationalId: string;
   fatherOccupation?: string;
   motherName?: string;
+  motherOccupation: string;
   guardians: StudentGuardian[];
   presentAddress?: string;
   permanentAddress?: string;
@@ -60,6 +89,7 @@ export interface Student {
   group?: string;
   section?: string;
   rollNumber?: string;
+  academicHistory: StudentAcademicHistory[];
   educationBoard?: string;
   boardRegistrationNumber?: string;
   registrationYear?: number;
@@ -98,10 +128,16 @@ interface ApiResponse<T> {
 }
 
 const STUDENTS_ENDPOINT = "/students";
+const STUDENTS_AUTH_PROFILE_ENDPOINT = "/student-auth";
 
-export const getAllStudents = async (): Promise<Student[]> => {
-  const response =
-    await axiosInstance.get<ApiResponse<Student[]>>(STUDENTS_ENDPOINT);
+export const createStudent = async (
+  formData: FormData,
+  // payload: CreateStudentPayload,
+): Promise<Student> => {
+  const response = await axiosInstance.post<ApiResponse<Student>>(
+    STUDENTS_ENDPOINT,
+    formData,
+  );
 
   return response.data.data;
 };
@@ -114,13 +150,16 @@ export const getStudentById = async (id: string): Promise<Student> => {
   return response.data.data;
 };
 
-export const createStudent = async (
-  formData: FormData,
-  // payload: CreateStudentPayload,
-): Promise<Student> => {
-  const response = await axiosInstance.post<ApiResponse<Student>>(
-    STUDENTS_ENDPOINT,
-    formData,
+export const getAllStudents = async (): Promise<Student[]> => {
+  const response =
+    await axiosInstance.get<ApiResponse<Student[]>>(STUDENTS_ENDPOINT);
+
+  return response.data.data;
+};
+
+export const getStudentProfile = async (): Promise<Student> => {
+  const response = await studentAxios.get<ApiResponse<Student>>(
+    `${STUDENTS_AUTH_PROFILE_ENDPOINT}/me`,
   );
 
   return response.data.data;
