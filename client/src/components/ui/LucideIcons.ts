@@ -167,6 +167,11 @@ import {
   GraduationCap,
   Newspaper,
   NewspaperIcon,
+  ToggleRight,
+  ToggleLeftIcon,
+  ToggleRightIcon,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 // Central registry
@@ -202,6 +207,8 @@ export const LucideIcon = {
   ChevronsUp,
   ChevronsDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   CalendarClock,
   CircleCheck,
   CirclePlus,
@@ -308,6 +315,9 @@ export const LucideIcon = {
   TableCellsSplit,
   Target,
   TargetIcon,
+  ToggleRight,
+  ToggleRightIcon,
+  ToggleLeftIcon,
   ToolCase,
   TrendingUp,
   TrendingUpDown,

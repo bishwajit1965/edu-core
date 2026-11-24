@@ -1,5 +1,4 @@
 import { Schema, model } from "mongoose";
-
 import { IUser, UserModel } from "./auth.interface.js";
 import { USER_ROLE, USER_STATUS } from "./auth.constant.js";
 

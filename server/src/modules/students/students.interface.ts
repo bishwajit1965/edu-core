@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import type { MediaReference } from "../media/media.interface.js";
 import {
   CLEARANCE_STATUS,
@@ -19,6 +19,14 @@ export type TClearanceStatus =
 export type TStudentAcademicState =
   (typeof STUDENT_ACADEMIC_STATE)[keyof typeof STUDENT_ACADEMIC_STATE];
 
+export interface IStudentSubjectSelection {
+  subject: Types.ObjectId;
+  subjectName: string;
+  subjectCode?: string;
+  isElective: boolean;
+  isFourthSubject: boolean;
+}
+
 export interface IStudentAcademicHistory {
   academicSession: string;
   className: string;
@@ -26,6 +34,7 @@ export interface IStudentAcademicHistory {
   section?: string;
   rollNumber?: string;
   academicState: TStudentAcademicState;
+  subjects: IStudentSubjectSelection[];
   remarks?: string;
 }
 

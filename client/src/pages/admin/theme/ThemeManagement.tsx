@@ -659,6 +659,9 @@ const ThemeManagement = () => {
           onSearchChange={setSearchQuery}
           searchPlaceholder="Search themes..."
           emptyMessage="No themes found."
+          icon={<LucideIcon.List size={19} />}
+          labelText="Number of themes displayed:"
+          dataLength={themes?.length ?? 0}
           actions={renderActions}
         />
       )}

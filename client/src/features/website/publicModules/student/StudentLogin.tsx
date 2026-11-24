@@ -3,6 +3,7 @@ import { isAxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight, FaIdCard } from "react-icons/fa";
 import axiosInstance from "../../../../lib/axios.js";
+import { LucideLogIn } from "lucide-react";
 
 const StudentLogin = () => {
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ const StudentLogin = () => {
         disabled={isSubmitting}
         className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#12304A] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/10 transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
       >
+        <LucideLogIn />{" "}
         {isSubmitting ? "Please wait..." : "Continue with Student ID"}
         {!isSubmitting && <FaArrowRight />}
       </button>

@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import AppError from "../../errors/AppError.js";
 import { User } from "../auth/auth.model.js";
-import { USER_STATUS } from "../auth/auth.constant.js";
+import { USER_ROLE, USER_STATUS } from "../auth/auth.constant.js";
 import { redisClient } from "../../database/redis.js";
 
 const getAllUsersService = async () => {
-  // Redish cash
+  // Redis cash
   const cacheKey = "users:all";
 
   const cachedUsers = await redisClient.get(cacheKey);
@@ -117,10 +117,38 @@ const softDeleteUserService = async (id: string) => {
   return softDeletedUser;
 };
 
+const assignRoleService = async (id: string, role: string) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid user id");
+  }
+
+  if (!Object.values(USER_ROLE).includes(role as any)) {
+    throw new AppError(400, "Invalid user role");
+  }
+
+  const user = await User.findOne({ _id: id, isDeleted: false });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    { role },
+    {
+      new: true,
+      runValidators: true,
+    },
+  ).select("_id name email avatar bio role status createdAt updatedAt");
+
+  return updatedUser;
+};
+
 export const UserService = {
   getAllUsersService,
   getUserByIdService,
   updateUserService,
   blockUserService,
   softDeleteUserService,
+  assignRoleService,
 };

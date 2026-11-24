@@ -49,6 +49,30 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       path: "/admin/dashboard/theme-management",
       icon: <LucideSettings size={size} />,
     },
+    {
+      id: 7,
+      name: "Subjects",
+      path: "/admin/dashboard/subject-configuration-management",
+      icon: <LucideSettings size={size} />,
+    },
+    {
+      id: 8,
+      name: "Roles",
+      path: "/admin/dashboard/role-management",
+      icon: <LucideSettings size={size} />,
+    },
+    {
+      id: 9,
+      name: "Permission",
+      path: "/admin/dashboard/permission-management",
+      icon: <LucideSettings size={size} />,
+    },
+    {
+      id: 10,
+      name: "Roles & Permission",
+      path: "/admin/dashboard/role-permission-management",
+      icon: <LucideSettings size={size} />,
+    },
   ];
 
   return (

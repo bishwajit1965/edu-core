@@ -5,7 +5,6 @@ import {
   Compass,
   GraduationCap,
   Mail,
-  Menu,
   Phone,
   Star,
   Trophy,
@@ -19,6 +18,7 @@ import { LucideIcon } from "../../../components/ui/LucideIcons";
 import type { Theme } from "../../theme/themeApi";
 import { useEffect, useState } from "react";
 import LeadershipMessageSection from "./themeComponents/leadershipMessage/LeadershipMessageSection";
+import InstitutionalHeader from "./themeComponents/institutionHeader/InstitutionalHeader";
 
 interface ModernThemeProps {
   settings: PublicInstitutionSettings;
@@ -29,6 +29,7 @@ interface ModernThemeProps {
 const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const { institution, branding, contact, social, features } = settings;
+
   console.log("THEMES in Modern Theme", themes);
   // const primaryColor = branding?.primaryColor || "#123b83";
   const theme = themes.find((theme) => theme?.slug === "modern-professional");
@@ -165,6 +166,21 @@ const ModernTheme = ({ settings, themes, notices }: ModernThemeProps) => {
         fontFamily: typography?.bodyFont || "Inter",
       }}
     >
+      {/*=====================================
+      |* TOP INSTITUTIONAL HEADER SECTION
+      |* =====================================*/}
+      <section
+        className="bg-sky-400s mx-auto"
+        style={{
+          background: `linear-gradient(125deg, ${primaryColor}, ${secondaryColor})`,
+          // backgroundColor: accentColor || "#123b83",
+          // color: textColor || "yellow",
+          // maxWidth: layout?.maxWidth || "1280px",
+        }}
+      >
+        <InstitutionalHeader settings={settings} themes={themes} />
+      </section>
+
       {/*=====================================
       |* TOP CONTACT BAR SECTION
       |* =====================================*/}

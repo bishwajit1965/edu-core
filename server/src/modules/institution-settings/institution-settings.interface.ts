@@ -1,6 +1,12 @@
 import { Model } from "mongoose";
 
+import { INSTITUTION_TYPE } from "./institution-settings.constant.js";
+
+export type InstitutionType =
+  (typeof INSTITUTION_TYPE)[keyof typeof INSTITUTION_TYPE];
+
 export type LeadershipRole = "GB_CHAIRMAN" | "PRINCIPAL" | "VICE_PRINCIPAL";
+
 export interface ILeadershipMessage {
   role: LeadershipRole;
   name: string;
@@ -20,7 +26,7 @@ export interface ILeadershipMessages {
 }
 export interface IInstitution {
   name: string;
-  institutionType: string;
+  institutionType: InstitutionType;
   eiin?: string;
   code: string;
   establishedYear?: number;

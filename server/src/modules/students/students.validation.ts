@@ -12,6 +12,7 @@ const mediaReferenceSchema = z.object({
 });
 
 const guardianSchema = z.object({
+  _id: z.string().optional(),
   name: z.string().trim().min(1).max(200),
   relationship: z.string().trim().min(1),
   phone: z.string().trim().min(1),
@@ -41,6 +42,54 @@ const clearanceSchema = z.object({
   remarks: z.string().trim().optional(),
 });
 
+// const subjectSelectionSchema = z.object({
+//   configurationId: z.string().trim().min(1),
+//   mainSubjectId: z.string().trim().min(1),
+//   fourthSubjectId: z.string().trim().min(1),
+// });
+
+const subjectSelectionSchema = z
+  .object({
+    configurationId: z.string().trim().min(1),
+    mainSubjectId: z.string().trim().min(1).optional(),
+    mainSubjectIds: z.array(z.string().trim().min(1)).optional(),
+    fourthSubjectId: z.string().trim().min(1),
+  })
+  .superRefine((selection, ctx) => {
+    const hasSingleMainSubject = Boolean(selection.mainSubjectId);
+    const hasMultipleMainSubjects =
+      Array.isArray(selection.mainSubjectIds) &&
+      selection.mainSubjectIds.length > 0;
+
+    if (!hasSingleMainSubject && !hasMultipleMainSubjects) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["mainSubjectId"],
+        message: "At least one main subject must be selected.",
+      });
+    }
+
+    if (hasSingleMainSubject && hasMultipleMainSubjects) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["mainSubjectIds"],
+        message: "Provide either mainSubjectId or mainSubjectIds, not both.",
+      });
+    }
+
+    if (
+      hasMultipleMainSubjects &&
+      new Set(selection.mainSubjectIds).size !==
+        (selection.mainSubjectIds?.length ?? 0)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["mainSubjectIds"],
+        message: "Duplicate main subjects are not allowed.",
+      });
+    }
+  });
+
 const studentBaseSchema = z.object({
   name: z.string().trim().min(1).max(200),
   dateOfBirth: z.coerce.date().optional(),
@@ -61,6 +110,7 @@ const studentBaseSchema = z.object({
   admissionType: z.enum(
     Object.values(STUDENT_ADMISSION_TYPE) as [string, ...string[]],
   ),
+  subjectSelection: subjectSelectionSchema.optional(),
   tcDetails: tcDetailsSchema.optional(),
   academicSession: z.string().trim().min(1),
   className: z.string().trim().min(1),

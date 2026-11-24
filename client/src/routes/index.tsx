@@ -18,7 +18,6 @@ import SettingsPage from "../pages/admin/SettingsPage";
 import UsersPage from "../pages/admin/UsersPage";
 import VerifyOtp from "../pages/auth/VerifyOtp";
 import Profile from "../pages/public/Profile";
-import StudentsPage from "../pages/admin/StudentsPage";
 import NoticeManagement from "../pages/admin/notice/NoticeManagement";
 import Notices from "../pages/public/Notices";
 import ThemeManagement from "../pages/admin/theme/ThemeManagement";
@@ -34,6 +33,12 @@ import StudentResults from "../features/website/publicModules/student/StudentRes
 import StudentLogin from "../features/website/publicModules/student/StudentLogin";
 import StudentVerifyOTP from "../features/website/publicModules/student/StudentVerifyOTP";
 import StudentAuthLayout from "../features/website/layouts/StudentAuthLayout";
+import SubjectConfigurationManagementPage from "../pages/admin/subjectConfigurationManagementPage/SubjectConfigurationManagementPage";
+import StudentsAdmissionManagementPage from "../pages/admin/students/StudentsAdmissionManagementPage";
+import NotFound from "../pages/notFoundPage/NotFound";
+import RoleManagementPage from "../pages/admin/role/RoleManagementPage";
+import PermissionManagementPage from "../pages/admin/permission/PermissionManagementPage";
+import RolePermissionManagementPage from "../pages/admin/rolePermissionManagement/RolePermissionManagementPage";
 
 export const router = createBrowserRouter([
   // MAIN LAYOUT
@@ -78,6 +83,10 @@ export const router = createBrowserRouter([
         path: "/profile",
         element: <Profile />,
         handle: { title: "My Profile" },
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
@@ -134,6 +143,10 @@ export const router = createBrowserRouter([
         path: "/student-portal/student/results",
         element: <StudentResults />,
         handle: { title: "My Results" },
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
@@ -202,7 +215,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/admin/dashboard/students",
-        element: <StudentsPage />,
+        element: <StudentsAdmissionManagementPage />,
       },
       {
         path: "/admin/dashboard/notice-management",
@@ -211,6 +224,26 @@ export const router = createBrowserRouter([
       {
         path: "/admin/dashboard/theme-management",
         element: <ThemeManagement />,
+      },
+      {
+        path: "/admin/dashboard/subject-configuration-management",
+        element: <SubjectConfigurationManagementPage />,
+      },
+      {
+        path: "/admin/dashboard/role-management",
+        element: <RoleManagementPage />,
+      },
+      {
+        path: "/admin/dashboard/permission-management",
+        element: <PermissionManagementPage />,
+      },
+      {
+        path: "/admin/dashboard/role-permission-management",
+        element: <RolePermissionManagementPage />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },

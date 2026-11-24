@@ -3,6 +3,7 @@ import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, Heart, Sparkles, Users } from "lucide-react";
 import type { Theme } from "../../theme/themeApi";
+import InstitutionalHeader from "./themeComponents/institutionHeader/InstitutionalHeader";
 
 interface VibrantThemeProps {
   settings: PublicInstitutionSettings;
@@ -17,6 +18,18 @@ const VibrantTheme = ({ themes, settings }: VibrantThemeProps) => {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#fffdf8] text-slate-800">
+      <section
+        className="bg-sky-400s mx-auto"
+        style={
+          {
+            // backgroundColor: accentColor || "#123b83",
+            // color: textColor || "yellow",
+            // maxWidth: layout?.maxWidth || "1280px",
+          }
+        }
+      >
+        <InstitutionalHeader settings={settings} themes={themes} />
+      </section>
       <header className="relative z-10 bg-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 py-5">
           <div className="flex items-center gap-3">

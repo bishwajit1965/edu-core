@@ -23,6 +23,14 @@ export type StudentAcademicState =
   | "passed-out"
   | "graduated";
 
+export interface StudentSubjectSelection {
+  subject: string;
+  subjectName: string;
+  subjectCode?: string;
+  isElective: boolean;
+  isFourthSubject: boolean;
+}
+
 export interface StudentAcademicHistory {
   academicSession: string;
   className: string;
@@ -30,6 +38,7 @@ export interface StudentAcademicHistory {
   section?: string;
   rollNumber?: string;
   academicState: StudentAcademicState;
+  subjects: StudentSubjectSelection[];
   remarks?: string;
 }
 export interface StudentGuardian {

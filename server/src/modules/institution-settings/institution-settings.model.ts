@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
-
 import {
   IInstitutionSettings,
   InstitutionSettingsModel,
 } from "./institution-settings.interface.js";
+import { INSTITUTION_TYPE } from "./institution-settings.constant.js";
 
 const leadershipMessageSchema = new Schema(
   {
@@ -30,7 +30,12 @@ const institutionSettingsSchema = new Schema<
   {
     institution: {
       name: { type: String, required: true, trim: true },
-      institutionType: { type: String, required: true, trim: true },
+      institutionType: {
+        type: String,
+        enum: Object.values(INSTITUTION_TYPE),
+        required: true,
+      },
+      // institutionType: { type: String, required: true, trim: true },
       eiin: { type: String, required: true, default: "" },
       code: { type: String, required: true, trim: true },
       establishedYear: { type: Number, min: 1800 },

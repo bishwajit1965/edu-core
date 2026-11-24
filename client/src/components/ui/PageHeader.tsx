@@ -15,7 +15,7 @@ const PageHeader = ({
   countBadge,
 }: PageHeaderProps) => {
   return (
-    <header className="sticky top-16 z-20 mb-6 isolate overflow-hidden rounded-2xl border border-blue-900/20 bg-linear-to-br from-slate-950 via-blue-950 to-indigo-950 p-5 text-white shadow-xl shadow-blue-950/10 sm:p-7">
+    <header className="sticky top-16 z-20 mb-6 isolate overflow-hidden rounded-lg border border-gray-300 lg:p-4 p-3 bg-base-200 text-slate-800 shadow-sm sm:p-2">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-12 -top-24 z-0 h-64 w-64 rounded-full border border-white/10"
@@ -26,19 +26,19 @@ const PageHeader = ({
       />
 
       <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <p className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-blue-200">
+        <div className="min-w-0 space-y-2">
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-blue-900">
             Campus administration
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl lg:text-4xl">
+            <h1 className="text-xl font-bold tracking-tight text-gray-900 lg:text-2xl">
               {title}
             </h1>
             {countBadge && <Badge>{countBadge}</Badge>}
           </div>
 
           {description && (
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-blue-100/80 sm:text-base">
+            <p className="max-w-3xl text-sm leading-6 text-gray-700 sm:text-base">
               {description}
             </p>
           )}

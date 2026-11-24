@@ -41,4 +41,11 @@ router.get(
   UserController.getAllUsers,
 );
 
+router.patch(
+  "/:id/assign-role",
+  authMiddleware,
+  authorize(USER_ROLE.ADMIN),
+  UserController.assignRole,
+);
+
 export default router;

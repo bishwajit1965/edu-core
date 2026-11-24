@@ -1,6 +1,34 @@
 import { Outlet } from "react-router-dom";
+import { usePublicApiQuery } from "../../../hooks/publicDataFetcherHooks/usePublicApiQuery.js";
+import { getPublicInstitutionSettings } from "../../settings/settingsApi.js";
+import { PUBLIC_API_KEYS } from "../../../hooks/publicDataFetcherHooks/queryKeyConstants.js";
+import { getActiveThemes } from "../../theme/themeApi.js";
+import {
+  LucideCalendar,
+  LucideGlobe,
+  LucideMail,
+  LucidePhoneCall,
+} from "lucide-react";
 
 const StudentAuthLayout = () => {
+  const { data: settings } = usePublicApiQuery({
+    key: [...PUBLIC_API_KEYS.SETTING],
+    queryFn: getPublicInstitutionSettings,
+  });
+
+  const { data: themes } = usePublicApiQuery({
+    key: [...PUBLIC_API_KEYS.THEME],
+    queryFn: getActiveThemes,
+  });
+
+  const theme = settings?.website?.theme ?? "";
+  const selectedTheme = themes?.find((item) => item?.slug === theme);
+  const { branding, institution } = settings || {};
+
+  console.log("SETTINGS IN STUDENT LAYOUT", settings);
+  console.log("THEMES IN STUDENT LAYOUT", themes);
+  console.log("SELECTED THEME", selectedTheme);
+
   return (
     <div className="min-h-screen bg-slate-100 p-3 sm:p-6 lg:p-10">
       <div className="mx-auto grid min-h-[calc(100vh-150px)] max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl lg:grid-cols-2">
@@ -13,20 +41,31 @@ const StudentAuthLayout = () => {
           <div className="relative z-10">
             {/* Replace with institution logo */}
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl font-bold text-[#12304A]">
-                E
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-xl font-bold text-[#12304A]">
+                {branding?.logo ? (
+                  <img
+                    src={branding?.logo ?? ""}
+                    alt={institution?.name ?? ""}
+                  />
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-xl font-bold text-[#12304A]">
+                    EC
+                  </div>
+                )}
               </div>
 
               <div>
                 <h1 className="text-lg font-bold tracking-wide">
-                  Your Institution
+                  {institution?.name ?? ""}
                 </h1>
-                <p className="text-xs text-slate-300">School & College</p>
+                <p className="text-xs text-slate-300">
+                  {institution?.institutionType ?? ""}
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="relative z-10 my-16">
+          <div className="relative z-10 lg:my-16 my-8">
             <span className="mb-5 inline-block rounded-full border border-teal-300/30 bg-teal-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-teal-200">
               Student Portal
             </span>
@@ -36,18 +75,38 @@ const StudentAuthLayout = () => {
               <span className="text-teal-300"> all in one place.</span>
             </h2>
 
-            <p className="mt-6 max-w-md text-base leading-7 text-slate-300">
+            <p className="lg:mt-6 mt-3 max-w-md text-base leading-7 text-slate-300">
               Access your academic profile, class routine, examination
               schedules, results and important institutional notices through
               your personal student portal.
             </p>
           </div>
 
-          <div className="relative z-10 border-t border-white/10 pt-6">
-            <p className="text-sm text-slate-300">
+          <div className="relative z-10 border-t border-white/10 lg:pt-6 pt-3 space-y-2">
+            <p className="mt-2 text-sm text-slate-300">
               A connected academic experience.
             </p>
-            <p className="mt-2 text-xs text-slate-400">Powered by EduCore</p>
+
+            <p className="text-xs text-slate-400 flex flex-wrap gap-2 items-center gap-x-4">
+              <span className="flex items-center gap-x-2">
+                <LucideMail size={14} /> Email: {institution?.email}
+              </span>
+              <span className="flex items-center gap-x-2">
+                <LucidePhoneCall size={14} /> Phone: {institution?.phone}
+              </span>
+            </p>
+
+            <p className="text-xs text-slate-400 border-b border-white/10 lg:pb-6 pb-3 gap-x-4 flex flex-wrap gap-2 items-center">
+              <span className="flex items-center gap-x-2">
+                <LucideCalendar size={14} /> Established in:{" "}
+                {institution?.establishedYear} AD
+              </span>
+              <span className="flex items-center gap-x-2">
+                <LucideGlobe size={14} /> Url: {institution?.website}
+              </span>
+            </p>
+
+            <p className="text-xs text-slate-400 ">Powered by EduCore</p>
           </div>
         </section>
 

@@ -1,6 +1,10 @@
 export const USER_ROLE = {
   ADMIN: "ADMIN",
   USER: "USER",
+  PRINCIPAL: "PRINCIPAL",
+  VICE_PRINCIPAL: "VICE_PRINCIPAL",
+  TEACHER: "TEACHER",
+  STAFF: "STAFF",
 } as const;
 
 export const USER_STATUS = {

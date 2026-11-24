@@ -9,6 +9,34 @@ import {
   STUDENT_STATUS,
 } from "./students.constant.js";
 
+const studentSubjectSelectionSchema = new Schema(
+  {
+    subject: {
+      type: Schema.Types.ObjectId,
+      ref: "Subject",
+      required: true,
+    },
+    subjectName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    subjectCode: {
+      type: String,
+      trim: true,
+    },
+    isElective: {
+      type: Boolean,
+      default: false,
+    },
+    isFourthSubject: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { _id: false },
+);
+
 const academicHistorySchema = new Schema(
   {
     academicSession: {
@@ -29,6 +57,10 @@ const academicHistorySchema = new Schema(
       enum: Object.values(STUDENT_ACADEMIC_STATE),
       default: STUDENT_ACADEMIC_STATE.ENROLLED,
       required: true,
+    },
+    subjects: {
+      type: [studentSubjectSelectionSchema],
+      default: [],
     },
     remarks: { type: String, trim: true },
   },

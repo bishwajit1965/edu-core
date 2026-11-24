@@ -3,6 +3,7 @@ import type { Notice } from "../../notice/noticeApi";
 import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, Users, Award } from "lucide-react";
 import type { Theme } from "../../theme/themeApi";
+import InstitutionalHeader from "./themeComponents/institutionHeader/InstitutionalHeader";
 
 interface AcademicThemeProps {
   settings: PublicInstitutionSettings;
@@ -35,6 +36,18 @@ const AcademicTheme = ({ themes, settings }: AcademicThemeProps) => {
 
   return (
     <main className="min-h-screen bg-white text-slate-800">
+      <section
+        className="bg-sky-400s mx-auto"
+        style={
+          {
+            // backgroundColor: accentColor || "#123b83",
+            // color: textColor || "yellow",
+            // maxWidth: layout?.maxWidth || "1280px",
+          }
+        }
+      >
+        <InstitutionalHeader settings={settings} themes={themes} />
+      </section>
       <header className="border-b border-slate-200">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-5 py-5">
           <div className="flex items-center gap-3">

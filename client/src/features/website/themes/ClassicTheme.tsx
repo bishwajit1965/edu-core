@@ -4,6 +4,7 @@ import type { PublicInstitutionSettings } from "../../settings/settingsApi";
 import { ArrowRight, BookOpen, MapPin } from "lucide-react";
 import NoticesSection from "../components/NoticesSection";
 import type { Theme } from "../../theme/themeApi";
+import InstitutionalHeader from "./themeComponents/institutionHeader/InstitutionalHeader";
 interface ClassicThemeProps {
   settings: PublicInstitutionSettings;
   themes: Theme[];
@@ -16,6 +17,19 @@ const ClassicTheme = ({ settings, themes, notices }: ClassicThemeProps) => {
   console.log("THEME IN CLASSIC THEME", themes);
   return (
     <main className="min-h-screen bg-[#f8f6f0] text-slate-800">
+      <section
+        className="bg-sky-400s mx-auto"
+        style={
+          {
+            // backgroundColor: accentColor || "#123b83",
+            // color: textColor || "yellow",
+            // maxWidth: layout?.maxWidth || "1280px",
+          }
+        }
+      >
+        <InstitutionalHeader settings={settings} themes={themes} />
+      </section>
+
       <div className="bg-[#142b49] px-5 py-2 text-sm text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-2">
           <span>
