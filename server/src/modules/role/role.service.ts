@@ -49,6 +49,7 @@ const updateRoleService = async (
   payload: Partial<{
     name: string;
     description: string;
+    permissions: mongoose.Types.ObjectId[];
   }>,
 ) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {

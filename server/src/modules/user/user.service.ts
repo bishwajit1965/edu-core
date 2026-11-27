@@ -3,6 +3,7 @@ import AppError from "../../errors/AppError.js";
 import { User } from "../auth/auth.model.js";
 import { USER_ROLE, USER_STATUS } from "../auth/auth.constant.js";
 import { redisClient } from "../../database/redis.js";
+import { Role } from "../role/role.model.js";
 
 const getAllUsersService = async () => {
   // Redis cash
@@ -117,16 +118,69 @@ const softDeleteUserService = async (id: string) => {
   return softDeletedUser;
 };
 
-const assignRoleService = async (id: string, role: string) => {
+// const assignRoleService = async (id: string, role: string) => {
+//   if (!mongoose.Types.ObjectId.isValid(id)) {
+//     throw new AppError(400, "Invalid user id");
+//   }
+
+//   if (!Object.values(USER_ROLE).includes(role as any)) {
+//     throw new AppError(400, "Invalid user role");
+//   }
+
+//   const user = await User.findOne({ _id: id, isDeleted: false });
+
+//   if (!user) {
+//     throw new AppError(404, "User not found");
+//   }
+
+//   const updatedUser = await User.findByIdAndUpdate(
+//     id,
+//     { role },
+//     {
+//       new: true,
+//       runValidators: true,
+//     },
+//   ).select("_id name email avatar bio role status createdAt updatedAt");
+
+//   return updatedUser;
+// };
+
+const assignRoleService = async (id: string, roles: string[]) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid user id");
   }
 
-  if (!Object.values(USER_ROLE).includes(role as any)) {
-    throw new AppError(400, "Invalid user role");
+  if (!Array.isArray(roles)) {
+    throw new AppError(400, "Roles must be an array");
   }
 
-  const user = await User.findOne({ _id: id, isDeleted: false });
+  // Remove duplicate role IDs
+  const uniqueRoleIds = [...new Set(roles)];
+
+  // Validate role IDs
+  const invalidIds = uniqueRoleIds.some(
+    (roleId) => !mongoose.Types.ObjectId.isValid(roleId),
+  );
+
+  if (invalidIds) {
+    throw new AppError(400, "Invalid role id");
+  }
+
+  // Verify that all selected roles exist and are active
+  const validRoles = await Role.find({
+    _id: { $in: uniqueRoleIds },
+    isActive: true,
+    isDeleted: false,
+  }).select("_id");
+
+  if (validRoles.length !== uniqueRoleIds.length) {
+    throw new AppError(400, "One or more selected roles are invalid");
+  }
+
+  const user = await User.findOne({
+    _id: id,
+    isDeleted: false,
+  });
 
   if (!user) {
     throw new AppError(404, "User not found");
@@ -134,16 +188,12 @@ const assignRoleService = async (id: string, role: string) => {
 
   const updatedUser = await User.findByIdAndUpdate(
     id,
-    { role },
-    {
-      new: true,
-      runValidators: true,
-    },
-  ).select("_id name email avatar bio role status createdAt updatedAt");
+    { roles: uniqueRoleIds },
+    { new: true, runValidators: true },
+  ).select("_id name email avatar bio roles status createdAt updatedAt");
 
   return updatedUser;
 };
-
 export const UserService = {
   getAllUsersService,
   getUserByIdService,

@@ -5,6 +5,7 @@ export interface IRole {
   name: string;
   key: string;
   description?: string;
+  permissions?: string[]; // Permission ObjectIds
   isActive: boolean;
   isDeleted: boolean;
   createdAt?: string;
@@ -20,6 +21,7 @@ export interface CreateRolePayload {
 export interface UpdateRolePayload {
   name?: string;
   description?: string;
+  permissions?: string[];
 }
 
 interface ApiResponse<T> {

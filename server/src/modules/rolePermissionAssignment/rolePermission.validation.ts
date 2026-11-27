@@ -7,9 +7,7 @@ const objectIdSchema = z
 const createRolePermissionValidationSchema = z.object({
   body: z.object({
     role: objectIdSchema,
-    permission: z
-      .array(objectIdSchema)
-      .min(1, "At least one permission is required"),
+    permission: z.array(objectIdSchema),
   }),
 });
 

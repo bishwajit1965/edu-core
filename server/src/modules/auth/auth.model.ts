@@ -16,12 +16,19 @@ const userSchema = new Schema<IUser, UserModel>(
 
     password: { type: String, required: true, select: false },
 
-    role: {
-      type: String,
-      enum: Object.values(USER_ROLE),
-      default: USER_ROLE.USER,
-    },
+    // role: {
+    //   type: String,
+    //   enum: Object.values(USER_ROLE),
+    //   default: USER_ROLE.USER,
+    // },
 
+    // RBAC: A user can have multiple roles
+    roles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Role",
+      },
+    ],
     status: {
       type: String,
       enum: Object.values(USER_STATUS),

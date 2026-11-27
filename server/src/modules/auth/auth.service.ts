@@ -209,7 +209,7 @@ const loginUserService = async (payload: {
     name: user.name,
     email: user.email,
     avatar: user.avatar,
-    role: user.role,
+    // role: user.role,
   };
 
   const accessToken = createToken(
@@ -280,7 +280,6 @@ const refreshTokenService = async (token: string) => {
     name: string;
     email: string;
     avatar: string;
-    role: string;
   };
 
   // Step 3 : Read token from Redis
@@ -291,13 +290,25 @@ const refreshTokenService = async (token: string) => {
     throw new AppError(401, "Invalid refresh token");
   }
 
-  // Step 5: Create new access token
+  // Step 5: Verify current user status
+  const user = await User.findOne({
+    _id: decoded.userId,
+    status: USER_STATUS.ACTIVE,
+    isDeleted: false,
+    isVerified: true,
+  });
+
+  if (!user) {
+    await redisClient.del(`refresh:${decoded.userId}`);
+    throw new AppError(401, "User is no longer authorized");
+  }
+
+  // Step 6: Create new access token
   const jwtPayload = {
     userId: decoded.userId,
     name: decoded.name,
     email: decoded.email,
     avatar: decoded.avatar,
-    role: decoded.role,
   };
 
   const accessToken = createToken(
@@ -317,7 +328,7 @@ const refreshTokenService = async (token: string) => {
     EX: Number(process.env.REDIS_REFRESH_TOKEN_EXPIRES_IN),
   });
 
-  // Step 6: Return token
+  // Step 7: Return token
   return { accessToken, refreshToken };
 };
 

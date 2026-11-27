@@ -78,22 +78,25 @@ const softDeleteUser = catchAsync(async (req, res) => {
 
 const assignRole = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { role } = req.body;
+  const { roles } = req.body;
 
   if (typeof id !== "string") {
     throw new AppError(400, "Invalid user id");
   }
 
-  if (typeof role !== "string") {
-    throw new AppError(400, "Role is required");
+  if (
+    !Array.isArray(roles) ||
+    !roles.every((roleId) => typeof roleId === "string")
+  ) {
+    throw new AppError(400, "Roles must be an array of role IDs");
   }
 
-  const result = await UserService.assignRoleService(id, role);
+  const result = await UserService.assignRoleService(id, roles);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "User role assigned successfully.",
+    message: "User roles assigned successfully.",
     data: result,
   });
 });

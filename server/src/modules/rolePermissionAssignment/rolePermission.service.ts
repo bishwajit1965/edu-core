@@ -4,6 +4,7 @@ import { Role } from "../role/role.model.js";
 import { Permission } from "../permission/permission.model.js";
 import RolePermission from "./rolePermission.model.js";
 
+// Create or synchronize role permissions
 const createRolePermissionService = async (payload: {
   role: string;
   permission: string[];
@@ -15,16 +16,15 @@ const createRolePermissionService = async (payload: {
     throw new AppError(400, "Invalid role id");
   }
 
-  // Validate permission IDs
+  // Validate permission IDs (empty array is allowed)
   if (
     !Array.isArray(permissionIds) ||
-    permissionIds.length === 0 ||
     permissionIds.some((id) => !mongoose.Types.ObjectId.isValid(id))
   ) {
     throw new AppError(400, "Invalid permission id");
   }
 
-  // Remove duplicate IDs from the request
+  // Remove duplicate IDs
   const uniquePermissionIds = [...new Set(permissionIds)];
 
   // Check role
@@ -41,7 +41,7 @@ const createRolePermissionService = async (payload: {
     throw new AppError(400, "Cannot assign permission to an inactive role");
   }
 
-  // Check all permissions
+  // Check all selected permissions
   const permissions = await Permission.find({
     _id: { $in: uniquePermissionIds },
     isDeleted: false,
@@ -55,7 +55,19 @@ const createRolePermissionService = async (payload: {
     );
   }
 
-  // Create or reactivate assignments
+  // Deactivate previously assigned permissions that are unchecked
+  await RolePermission.updateMany(
+    {
+      role: roleId,
+      permission: { $nin: uniquePermissionIds },
+      isDeleted: false,
+    },
+    {
+      $set: { isActive: false },
+    },
+  );
+
+  // Create or reactivate selected assignments
   const assignments = await Promise.all(
     uniquePermissionIds.map(async (permissionId) => {
       const existingAssignment = await RolePermission.findOne({
@@ -64,14 +76,12 @@ const createRolePermissionService = async (payload: {
       });
 
       if (existingAssignment) {
-        if (!existingAssignment.isDeleted && existingAssignment.isActive) {
-          return existingAssignment;
+        if (existingAssignment.isDeleted || !existingAssignment.isActive) {
+          existingAssignment.isDeleted = false;
+          existingAssignment.isActive = true;
+
+          await existingAssignment.save();
         }
-
-        existingAssignment.isDeleted = false;
-        existingAssignment.isActive = true;
-
-        await existingAssignment.save();
 
         return existingAssignment;
       }
@@ -86,6 +96,7 @@ const createRolePermissionService = async (payload: {
   return assignments;
 };
 
+// Get all role-permission assignments
 const getAllRolePermissionsService = async () => {
   const assignments = await RolePermission.find({
     isDeleted: false,
@@ -97,6 +108,7 @@ const getAllRolePermissionsService = async () => {
   return assignments;
 };
 
+// Get permissions assigned to a specific role
 const getRolePermissionsService = async (roleId: string) => {
   if (!mongoose.Types.ObjectId.isValid(roleId)) {
     throw new AppError(400, "Invalid role id");
@@ -121,6 +133,7 @@ const getRolePermissionsService = async (roleId: string) => {
   return assignments;
 };
 
+// Update assignment status
 const updateRolePermissionStatusService = async (
   id: string,
   isActive: boolean,
@@ -142,6 +155,7 @@ const updateRolePermissionStatusService = async (
   return assignment;
 };
 
+// Soft delete assignment
 const softDeleteRolePermissionService = async (id: string) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid role-permission id");

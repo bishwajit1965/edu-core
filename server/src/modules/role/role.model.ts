@@ -20,6 +20,14 @@ const roleSchema = new Schema<IRole, RoleModel>(
       trim: true,
       default: "",
     },
+    // RBAC: Permissions are stored directly in Role
+    permissions: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Permission",
+      },
+    ],
+
     isActive: {
       type: Boolean,
       default: true,

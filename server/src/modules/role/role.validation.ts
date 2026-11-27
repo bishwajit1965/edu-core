@@ -14,6 +14,9 @@ const createRoleValidationSchema = z.object({
       ),
 
     description: z.string().trim().optional(),
+    permissions: z
+      .array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid permission ID"))
+      .optional(),
   }),
 });
 
@@ -22,6 +25,9 @@ const updateRoleValidationSchema = z.object({
     .object({
       name: z.string().trim().min(1).optional(),
       description: z.string().trim().optional(),
+      permissions: z
+        .array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid permission ID"))
+        .optional(),
     })
     .refine((data) => Object.keys(data).length > 0, {
       message: "At least one field is required for update",

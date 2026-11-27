@@ -1,4 +1,15 @@
-import { LucideSettings, LucideUser, LucideUserCog } from "lucide-react";
+import {
+  LayoutDashboard,
+  BellRing,
+  BookOpen,
+  UsersRound,
+  Palette,
+  LucideSettings,
+  Settings2,
+  ShieldCheck,
+  ShieldUser,
+  LucideUserCog,
+} from "lucide-react";
 import { NavLink } from "react-router-dom";
 interface SideNavProps {
   onNavigate?: () => void;
@@ -11,19 +22,19 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       id: 1,
       name: "Dashboard",
       path: "/admin/dashboard",
-      icon: <LucideSettings size={size} />,
+      icon: <LayoutDashboard size={size} />,
     },
     {
       id: 2,
       name: "Users",
       path: "/admin/dashboard/users",
-      icon: <LucideUser size={size} />,
+      icon: <UsersRound size={size} />,
     },
     {
       id: 3,
       name: "Settings",
       path: "/admin/dashboard/settings",
-      icon: <LucideSettings size={size} />,
+      icon: <Settings2 size={size} />,
     },
     {
       id: 4,
@@ -35,7 +46,7 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       id: 5,
       name: "Notice",
       path: "/admin/dashboard/notice-management",
-      icon: <LucideSettings size={size} />,
+      icon: <BellRing size={size} />,
     },
     {
       id: 6,
@@ -47,13 +58,13 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       id: 7,
       name: "Themes",
       path: "/admin/dashboard/theme-management",
-      icon: <LucideSettings size={size} />,
+      icon: <Palette size={size} />,
     },
     {
       id: 7,
       name: "Subjects",
       path: "/admin/dashboard/subject-configuration-management",
-      icon: <LucideSettings size={size} />,
+      icon: <BookOpen size={size} />,
     },
     {
       id: 8,
@@ -65,13 +76,13 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
       id: 9,
       name: "Permission",
       path: "/admin/dashboard/permission-management",
-      icon: <LucideSettings size={size} />,
+      icon: <ShieldCheck size={size} />,
     },
     {
       id: 10,
       name: "Roles & Permission",
       path: "/admin/dashboard/role-permission-management",
-      icon: <LucideSettings size={size} />,
+      icon: <ShieldUser size={size} />,
     },
   ];
 

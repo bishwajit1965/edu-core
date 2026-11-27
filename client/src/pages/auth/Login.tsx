@@ -7,14 +7,19 @@ import {
   LucideHome,
   LucideKeyRound,
   LucideLogIn,
+  LucideMail,
   LucideUsers,
 } from "lucide-react";
 
 type LoginResponse = {
   success: boolean;
   message?: string;
+  passwordResetMessage?: string;
   user?: {
-    role?: "ADMIN" | "USER" | string;
+    roles?: {
+      name?: string;
+      key?: string;
+    }[];
   };
 };
 
@@ -29,6 +34,10 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [readPassword, setReadPassword] = useState(false);
   const [message, setMessage] = useState(passwordResetMessage);
+  const [messageType, setMessageType] = useState<"success" | "error">(
+    passwordResetMessage ? "success" : "error",
+  );
+  const [requiresVerification, setRequiresVerification] = useState(false);
   const navigate = useNavigate();
 
   const auth = useAuth() as {
@@ -37,11 +46,16 @@ const Login = () => {
       email: string;
       password: string;
     }) => Promise<LoginResponse>;
+
     user?: {
       name?: string;
       email?: string;
-      role?: "ADMIN" | "USER" | string;
+      roles?: {
+        name?: string;
+        key?: string;
+      }[];
     };
+
     logout: () => Promise<void>;
   };
 
@@ -54,30 +68,64 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({
-      email,
-      password,
-    });
 
-    const res = await login({
-      email,
-      password,
-    });
+    setMessage("");
+    setRequiresVerification(false);
 
-    if (res.success) {
-      setEmail("");
-      setPassword("");
-      // setMessage("Logged in successfully!");
-      console.log("User Role in Login", res.user);
-      if (res?.user && res?.user?.role === "ADMIN") {
-        navigate("/admin/dashboard");
+    try {
+      const response = await login({
+        email,
+        password,
+      });
+
+      if (response.success) {
+        setEmail("");
+        setPassword("");
+        setMessageType("success");
+
+        const isAdmin = response.user?.roles?.some(
+          (role) => role.key === "ADMIN",
+        );
+
+        if (isAdmin) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
-        navigate("/");
+        setMessageType("error");
+        setMessage(response.message || "Login failed. Please try again.");
       }
-    } else {
-      setMessage(res.message || "Login failed. Please try again.");
+    } catch (error: unknown) {
+      setMessageType("error");
+
+      const errorMessage =
+        typeof error === "object" && error !== null && "response" in error
+          ? (
+              error as {
+                response?: {
+                  data?: {
+                    message?: string;
+                  };
+                };
+              }
+            ).response?.data?.message
+          : undefined;
+
+      setMessage(errorMessage || "Login failed. Please try again.");
+
+      const needsVerification =
+        errorMessage === "Please verify your email address.";
+
+      setRequiresVerification(needsVerification);
+      setMessage(
+        needsVerification
+          ? "Your email address has not been verified. Please verify your email before logging in."
+          : errorMessage || "Login failed. Please try again.",
+      );
     }
   };
+
   return (
     <div className="lg:min-w-sm min-w-full border border-gray-200 rounded-2xl lg:p-8 p-4 space-y-4 shadow-xl">
       {!authReady && (
@@ -88,14 +136,37 @@ const Login = () => {
 
       <h1 className="text-2xl font-bold flex items-center justify-center gap-2">
         <LucideLogIn className="w-4 h-4" />
-        Login Page
+        Edu Core Login
       </h1>
+      <div className="lg:max-w-xs cursor-pointer mx-auto">
+        {message && (
+          <div
+            className={`rounded-lg p-3 text-xs font-medium ${
+              messageType === "success"
+                ? "bg-green-50 text-green-700 border border-green-200"
+                : "bg-red-50 text-red-700 border border-red-200"
+            }`}
+          >
+            {message}
+          </div>
+        )}
+      </div>
 
-      {message && <p className="text-green-500 font-bold">{message}</p>}
+      <div className="lg:max-w-xs cursor-pointer mx-auto">
+        {requiresVerification && (
+          <Link
+            to="/auth/verify-email"
+            state={{ email }}
+            className="btn btn-sm btn-outline btn-primary w-full flex items-center cursor-pointer lg:max-w-xl"
+          >
+            <LucideMail size={14} /> Verify Your Email
+          </Link>
+        )}
+      </div>
 
       <form
         onSubmit={handleSubmit}
-        className="lg:max-w-xl mx-auto w-full space-y-4"
+        className="lg:max-w-xs mx-auto w-full space-y-4"
       >
         <div className="w-full space-y-4">
           <input

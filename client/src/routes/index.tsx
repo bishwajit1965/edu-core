@@ -10,7 +10,7 @@ import VerifyEmail from "../pages/auth/VerifyEmail";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import About from "../pages/public/About";
 import Contact from "../pages/public/Contact";
-import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminDashboard from "../pages/admin/adminDashboard/AdminDashboard";
 import AdminLayout from "../layouts/AdminLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Test from "../pages/admin/Test";
@@ -191,7 +191,7 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRoles={["ADMIN"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -199,7 +199,12 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/admin/dashboard",
-        element: <AdminDashboard />,
+        element: (
+          <ProtectedRoute requiredPermissions={["DASHBOARD_VIEW"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        ),
+        handle: { title: "Admin Dashboard Home" },
       },
       {
         path: "/admin/dashboard/test",
@@ -208,38 +213,47 @@ export const router = createBrowserRouter([
       {
         path: "/admin/dashboard/users",
         element: <UsersPage />,
+        handle: { title: "User Management" },
       },
       {
         path: "/admin/dashboard/settings",
         element: <SettingsPage />,
+        handle: { title: "Site Settings Management" },
       },
       {
         path: "/admin/dashboard/students",
         element: <StudentsAdmissionManagementPage />,
+        handle: { title: "Students Admission Management" },
       },
       {
         path: "/admin/dashboard/notice-management",
         element: <NoticeManagement />,
+        handle: { title: "Notice Management" },
       },
       {
         path: "/admin/dashboard/theme-management",
         element: <ThemeManagement />,
+        handle: { title: "Theme Management" },
       },
       {
         path: "/admin/dashboard/subject-configuration-management",
         element: <SubjectConfigurationManagementPage />,
+        handle: { title: "Subject Configuration Management" },
       },
       {
         path: "/admin/dashboard/role-management",
         element: <RoleManagementPage />,
+        handle: { title: "Role Management" },
       },
       {
         path: "/admin/dashboard/permission-management",
         element: <PermissionManagementPage />,
+        handle: { title: "Permissions Management" },
       },
       {
         path: "/admin/dashboard/role-permission-management",
         element: <RolePermissionManagementPage />,
+        handle: { title: "User Access Management" },
       },
       {
         path: "*",

@@ -14,7 +14,11 @@ import {
 } from "../../features/settings/settingsApi";
 import Select from "../../components/ui/Select";
 import Textarea from "../../components/ui/Textarea";
-import { LucideLoaderCircle, LucideSave } from "lucide-react";
+import {
+  LucideLayoutDashboard,
+  LucideLoaderCircle,
+  LucideSave,
+} from "lucide-react";
 import Checkbox from "../../components/ui/Checkbox";
 import { showSuccess, showError } from "../../utils/alert.js";
 import { getActiveThemes } from "../../features/theme/themeApi.js";
@@ -94,8 +98,6 @@ const SettingsPage = () => {
     key: [...PUBLIC_API_KEYS.THEME],
     queryFn: getActiveThemes,
   });
-
-  console.log("Theme in settings page", themes);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -368,8 +370,8 @@ const SettingsPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Institution Settings"
         description="Manage your institution's information and preferences."
+        icon={<LucideLayoutDashboard />}
         actions={
           <Button
             onClick={handleSave}

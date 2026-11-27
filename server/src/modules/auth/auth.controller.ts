@@ -218,13 +218,64 @@ const resendForgotPasswordOTP = catchAsync(async (req, res) => {
  * GET CURRENT LOGGED-IN USER **
  *============================================
  */
+// const getMe = catchAsync(async (req, res) => {
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: "User fetched successfully",
+//     data: req.user!,
+//   });
+// });
+
 const getMe = catchAsync(async (req, res) => {
+  const user = req.user!;
+
+  const permissions = [
+    ...new Set(
+      user.roles.flatMap((role) =>
+        role.permissions.map((permission) => permission.key),
+      ),
+    ),
+  ];
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "User fetched successfully",
-    data: req.user!,
+    data: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+
+      roles: user.roles.map((role) => ({
+        _id: role._id,
+        name: role.name,
+        key: role.key,
+      })),
+
+      permissions,
+    },
   });
+
+  // res.status(200).json({
+  //   success: true,
+  //   message: "User fetched successfully",
+  //   data: {
+  //     _id: user._id,
+  //     name: user.name,
+  //     email: user.email,
+  //     avatar: user.avatar,
+
+  //     roles: user.roles.map((role) => ({
+  //       _id: role._id,
+  //       name: role.name,
+  //       slug: role.slug,
+  //     })),
+
+  //     permissions,
+  //   },
+  // });
 });
 
 /**===========================================
