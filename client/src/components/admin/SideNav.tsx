@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   ShieldUser,
   LucideUserCog,
+  LucideFileBraces,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 interface SideNavProps {
@@ -80,6 +81,12 @@ const SideNav = ({ onNavigate }: SideNavProps) => {
     },
     {
       id: 10,
+      name: "Admission Instructions",
+      path: "/admin/dashboard/admission-instruction-management",
+      icon: <LucideFileBraces size={size} />,
+    },
+    {
+      id: 11,
       name: "Roles & Permission",
       path: "/admin/dashboard/role-permission-management",
       icon: <ShieldUser size={size} />,

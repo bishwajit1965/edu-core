@@ -110,9 +110,6 @@ const StudentsAdmissionManagementPage = () => {
       fourthSubjectId: "",
     });
 
-  console.log("Editing Student", editingStudent);
-  console.log("Deleted Student", deletedStudents);
-
   const [clearanceForm, setClearanceForm] = useState({
     duesStatus: "pending" as ClearanceStatus,
     duesVerifiedBy: "",
@@ -205,8 +202,6 @@ const StudentsAdmissionManagementPage = () => {
     setEditingStudent(null);
   };
 
-  console.log("Students", students);
-
   useEffect(() => {
     const loadStudents = async () => {
       try {
@@ -284,19 +279,6 @@ const StudentsAdmissionManagementPage = () => {
     subjectConfigurationsHumanities?.find(
       (config) => config?.group === "Humanities",
     );
-
-  console.log("SETTINGS IN STUDENT PAGE:", settings);
-
-  console.log("SCIENCE SUBJECTS COMBINATIONS:", scienceSubjectsConfigurations);
-
-  console.log(
-    "BUSINESS STUDIES SUBJECTS COMBINATIONS:",
-    businessStudiesSubjectsConfigurations,
-  );
-  console.log(
-    "HUMANITIES SUBJECTS COMBINATIONS:",
-    humanitiesSubjectsConfigurations,
-  );
 
   /**----------------------------------------
    * HANDLERS
@@ -900,7 +882,6 @@ const StudentsAdmissionManagementPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Student Management"
         description="Manage student records, admissions, academic placement, and clearances."
         actions={
           <div className="lg:flex flex-1 grid justify-center gap-2 items-center">
@@ -1523,7 +1504,6 @@ const StudentsAdmissionManagementPage = () => {
                 : submitting
                   ? "Saving Student..."
                   : "Save Student"}
-              {/* {submitting ? "Saving Student..." : "Save Student"} */}
             </Button>
           </div>
         </form>

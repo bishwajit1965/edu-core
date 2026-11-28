@@ -291,13 +291,13 @@ const RolePermissionManagementPage = () => {
           subject="Total Roles"
           dataLength={roles?.length ?? 0}
           actions={
-            <div className="lg:flex flex-1 grid items-center gap-2">
+            <div className="lg:flex flex-wrap items-center gap-2">
               <div className="aura text-emerald-600">
                 <div className="card bg-base-100 text-base-content">
                   <div className="card-body p-0.5">
                     <h3 className="flex items-center gap-2 rounded-md border border-gray-300 bg-base-100 px-2 py-0.5 text-sm font-bold lg:text-sm">
-                      <LucideIcon.List size={16} />
-                      Permissions:
+                      <LucideIcon.CalculatorIcon size={16} />
+                      Permissions →
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-xs font-thin text-white">
                         {permissions?.length ?? 0}
                       </span>

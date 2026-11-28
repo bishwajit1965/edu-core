@@ -172,6 +172,8 @@ import {
   ToggleRightIcon,
   ChevronLeft,
   ChevronRight,
+  Calculator,
+  CalculatorIcon,
 } from "lucide-react";
 
 // Central registry
@@ -195,6 +197,8 @@ export const LucideIcon = {
   BookAIcon,
   BookCopyIcon,
   BookOpen,
+  Calculator,
+  CalculatorIcon,
   ChartBar,
   CalendarDaysIcon,
   Check,

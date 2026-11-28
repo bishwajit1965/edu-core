@@ -73,7 +73,7 @@ const DataTable = <T,>({
                   {icon != null && <span className="shrink-0">{icon}</span>}
                   <span>{labelText}</span>
                   {dataLength != null && (
-                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-light bg-gray-800 text-white border border-gray-400 shadow">
+                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-light bg-blue-800 text-white border border-gray-400 shadow">
                       {dataLength}
                     </span>
                   )}
@@ -125,7 +125,9 @@ const DataTable = <T,>({
               ))}
 
               {actions && (
-                <th className="px-4 py-3 text-right font-semibold">Actions</th>
+                <th className="px-4 py-3 text-right font-semibold">
+                  ⇣ Actions
+                </th>
               )}
             </tr>
           </thead>
@@ -221,7 +223,7 @@ const DataTable = <T,>({
                   type="button"
                   onClick={() => setCurrentPage(page)}
                   className={`btn btn-sm ${
-                    activePage === page ? "btn-primary" : "btn-ghost"
+                    activePage === page ? "btn-outline" : "btn-ghost"
                   }`}
                 >
                   {page}

@@ -80,10 +80,6 @@ const NoticeManagement = () => {
     Notice["attachments"]
   >([]);
 
-  console.log("Editing notice option", isEditModalOpen.toString());
-  console.log("Editing Id", editNoticeId);
-  console.log("Editing notice", editingNotice);
-
   // Modal toggle option
   const modalOpenToggler = editNoticeId ? isEditModalOpen : isCreateModalOpen;
 
@@ -522,28 +518,11 @@ const NoticeManagement = () => {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Notice Management"
         description="Create, manage, and publish institutional notices."
+        subject="Total Notices"
+        dataLength={notices?.length}
         actions={
           <div className="lg:flex flex-1 grid items-center gap-2">
-            <div className="aura text-emerald-600">
-              <div className="card bg-base-100 text-base-content">
-                <div className="card-body p-0.5">
-                  <h3 className="lg:text-lg text-medium font-bold border border-gray-300 py-0.5 px-2 rounded-md bg-base-100 flex items-center gap-2">
-                    <span>
-                      <LucideIcon.List size={16} />
-                    </span>{" "}
-                    Notices:
-                    {/* {showDeleted
-                      ? "Deleted Students List"
-                      : "Regular Students List"}{" "} */}
-                    <span className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-xs text-white font-thin">
-                      {dataLength}
-                    </span>
-                  </h3>
-                </div>
-              </div>
-            </div>
             <Button
               onClick={() => setIsCreateModalOpen(true)}
               icon={LucideIcon.UploadCloudIcon}

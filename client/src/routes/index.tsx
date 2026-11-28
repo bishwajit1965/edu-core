@@ -39,6 +39,7 @@ import NotFound from "../pages/notFoundPage/NotFound";
 import RoleManagementPage from "../pages/admin/role/RoleManagementPage";
 import PermissionManagementPage from "../pages/admin/permission/PermissionManagementPage";
 import RolePermissionManagementPage from "../pages/admin/rolePermissionManagement/RolePermissionManagementPage";
+import AdmissionInstructionManagementPage from "../pages/admin/admissionInstructionmanagementPage/AdmissionInstructionManagementPage";
 
 export const router = createBrowserRouter([
   // MAIN LAYOUT
@@ -254,6 +255,11 @@ export const router = createBrowserRouter([
         path: "/admin/dashboard/role-permission-management",
         element: <RolePermissionManagementPage />,
         handle: { title: "User Access Management" },
+      },
+      {
+        path: "/admin/dashboard/admission-instruction-management",
+        element: <AdmissionInstructionManagementPage />,
+        handle: { title: "Admission Instruction Management" },
       },
       {
         path: "*",

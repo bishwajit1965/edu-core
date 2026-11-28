@@ -26,6 +26,18 @@ export const MEDIA_MODULES = {
     maxFileSizeBytes: 5 * MB,
     maxFiles: 10,
   },
+
+  admissionInstructions: {
+    folder: "educore/admission-instructions",
+    allowedMimeTypes: {
+      "image/jpeg": "image",
+      "image/png": "image",
+      "image/webp": "image",
+      "application/pdf": "raw",
+    },
+    maxFileSizeBytes: 5 * MB,
+    maxFiles: 10,
+  },
 } satisfies Record<string, MediaModuleConfig>;
 
 export type MediaModule = keyof typeof MEDIA_MODULES;

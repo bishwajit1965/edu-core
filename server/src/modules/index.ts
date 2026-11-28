@@ -12,6 +12,7 @@ import StudentAuthRoutes from "./studentAuth";
 import PermissionRouter from "./permission";
 import RoleRouter from "./role";
 import RolePermissionRouter from "./rolePermissionAssignment";
+import AdmissionInstructionsRoutes from "./admissionInstructions";
 
 const router = Router();
 
@@ -41,5 +42,7 @@ router.use("/permissions", PermissionRouter);
 router.use("/roles", RoleRouter);
 
 router.use("/role-permissions", RolePermissionRouter);
+
+router.use("/admission-instructions", AdmissionInstructionsRoutes);
 
 export default router;
